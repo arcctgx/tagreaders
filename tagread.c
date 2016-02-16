@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
                     bitrate,
                     taglib_tag_title(tag) );
             } else if (csv_mode == 1) {
-                printf( "\"%s\", \"%s\", \"%s\", \"\", \"%d\"\n",
+                printf( "\"%s\", \"%s\", \"%s\", \"\", \"\", \"%d\"\n",
                     taglib_tag_artist(tag),
                     taglib_tag_title(tag),
                     taglib_tag_album(tag),
