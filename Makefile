@@ -13,3 +13,7 @@ tagread_v1: tagread_v1.c
 
 tagread: tagread.c
 	$(CC) $(CCOPTS) tagread.c $(LTAGLIB) $(ITAGLIB) -o tagread
+
+clean:
+	rm -f tagread_v1
+	rm -f tagread
