@@ -9,6 +9,7 @@
 #include <unistd.h> /* for getopt() */
 #include <libgen.h> /* for basename() */
 #include <stdlib.h> /* for div() */
+#include <time.h>
 #include <tag_c.h>
 
 int usage(char *argv[])
@@ -17,6 +18,7 @@ int usage(char *argv[])
     fprintf(stderr, "   -l: enable list output\n");
     fprintf(stderr, "   -c: enable csv output\n");
     fprintf(stderr, "   -t: show total time\n");
+    fprintf(stderr, "   -T: enable timestamps in csv output\n");
     fprintf(stderr, "   -q: suppress error messages\n");
     return 1;
 }
@@ -42,20 +44,28 @@ void print_total_time(int seconds)
     return;
 }
 
+time_t parse_initial_timestamp(/*char *stamp*/ void)
+{
+    /* TODO: calculate it from command-line argument: strptime(), mktime() */
+    return 0;
+}
+
+
 int main(int argc, char *argv[])
 {
     char opt;
     extern int optind, opterr;
-    int list_mode = 0, csv_mode = 0, show_total = 0, quiet_mode = 0;
+    int list_mode = 0, csv_mode = 0, show_total = 0, quiet_mode = 0, enable_timestamp = 0;
     int seconds = 0, total = 0;
     int n, bitrate;
     div_t length;
     TagLib_File *file;
     TagLib_Tag *tag;
     const TagLib_AudioProperties *prop;
+    time_t current;
 
     opterr = 0;
-    while ((opt = getopt(argc, argv, "lctq")) != -1) {
+    while ((opt = getopt(argc, argv, "lctqT:")) != -1) {
         switch (opt) {
             case 'l':
                 list_mode = 1;
@@ -71,6 +81,10 @@ int main(int argc, char *argv[])
             case 'q':
                 quiet_mode = 1;
                 break;
+            case 'T':
+                enable_timestamp = 1;
+                /* TODO: optind? */
+                break;
             default:
                 break;  /* quietly ignore unknown options */
         }
@@ -82,6 +96,13 @@ int main(int argc, char *argv[])
 
     /* try to avoid mojibake: enable UTF-8 output */
     taglib_set_strings_unicode(1);
+
+    /*
+     * set begin time here:
+     */
+    if (enable_timestamp == 1) {
+        current = parse_initial_timestamp();
+    }
 
     for (n=optind; n < argc; n++) {
         file = taglib_file_new(argv[n]);
@@ -109,8 +130,8 @@ int main(int argc, char *argv[])
                     taglib_tag_album(tag),
                     taglib_tag_year(tag), 
                     taglib_tag_track(tag),
-                    length.quot,
-                    length.rem,
+                    length.quot,    /* minutes */
+                    length.rem,     /* seconds */
                     bitrate,
                     taglib_tag_title(tag) );
             } else if (csv_mode == 1) {
@@ -119,6 +140,7 @@ int main(int argc, char *argv[])
                     taglib_tag_title(tag),
                     taglib_tag_album(tag),
                     seconds );
+                current += seconds;   /* FIXME */
             } else {
                 printf( "FILE\t%s\n", argv[n] );
                 if (strlen(taglib_tag_title(tag)) > 0)      printf( "TITLE\t%s\n", taglib_tag_title(tag) );
