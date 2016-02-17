@@ -76,17 +76,17 @@ int usage(char *argv[])
 
 int has_id3v1_tag(FILE *mp3)
 {
-    int status = 0;
-    long int pos, off = ID3SIZE;
+    int status = NOTAG;
+    long int pos;
     char tag[ID3SIZE];
 
     pos = ftell(mp3);
-    fseek(mp3, -off, SEEK_END);
+    fseek(mp3, -ID3SIZE, SEEK_END);
     fgets(tag, ID3SIZE, mp3);
     if (strncmp(tag, "TAG", 3) == 0) {  /* id3v1.0 or v1.1 tag exists */
-        status = 10;
+        status = ID3V10;
         if (tag[ID3SIZE-3] == '\0')   /* NULL separator is present, indicating id3v1.1 */
-            status = 11;
+            status = ID3V11;
     }
 
     fseek(mp3, pos, SEEK_SET);
@@ -96,24 +96,25 @@ int has_id3v1_tag(FILE *mp3)
 
 int get_id3v1_tag(FILE *mp3, struct id3v1tag *tag)
 {
-    long int pos, off = ID3SIZE;
+    long int pos;
     char tagstr[ID3SIZE+1];  /* +1 because fgets puts NULL at the end of buffer */
 
     pos = ftell(mp3);
 
-    if ((tag->version=has_id3v1_tag(mp3)) == 0)
+    if ((tag->version=has_id3v1_tag(mp3)) == NOTAG)
         return NOTAG;
     else {
-        fseek(mp3, -off, SEEK_END);
+        fseek(mp3, -ID3SIZE, SEEK_END);
         fgets(tagstr, ID3SIZE+1, mp3);
         fseek(mp3, pos, SEEK_SET);
 
         /* take care of common fields first */
         strncpy(tag->title, tagstr+3, 30); tag->title[30] = '\0';
-        strncpy(tag->artist, tagstr+33,30); tag->artist[30] = '\0';
-        strncpy(tag->album, tagstr+63,30); tag->album[30] = '\0';
+        strncpy(tag->artist, tagstr+33, 30); tag->artist[30] = '\0';
+        strncpy(tag->album, tagstr+63, 30); tag->album[30] = '\0';
         strncpy(tag->year, tagstr+93, 4); tag->year[4] = '\0';
         tag->genre = (unsigned char)tagstr[127];    /* genre is an 8-bit integer */
+
         if (tag->version == ID3V10) {  /* id3v1.0: 30-char comment, track number unsupported */
             tag->track = -1;
             strncpy(tag->comment, tagstr+97, 30); tag->comment[30] = '\0';
