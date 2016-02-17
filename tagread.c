@@ -12,6 +12,8 @@
 #include <time.h>
 #include <tag_c.h>
 
+#define MAXTIMEBUF 64
+
 int usage(char *argv[])
 {
     fprintf(stderr, "usage: %s [OPTIONS] <file> [file2 ...]\n", basename(argv[0]));
@@ -44,10 +46,30 @@ void print_total_time(int seconds)
     return;
 }
 
-time_t parse_initial_timestamp(/*char *stamp*/ void)
+void get_scrobble_time(time_t ctime, int ttime, char *bufptr, size_t maxbuf)
 {
-    /* TODO: calculate it from command-line argument: strptime(), mktime() */
-    return 0;
+    time_t stime = -1;
+    struct tm *tm;
+
+    memset(bufptr, 0, maxbuf);
+
+    /* if length between 30 sec and 8 min, then scrobble at half of track */
+    if (ttime >= 30 && ttime < 480) {
+        stime = ctime + ttime/2;
+    }
+    /* if track is longer than 8 min scrobble at 4 min */
+    else if (ttime >= 480) {
+        stime = ctime + 240;
+    }
+
+    if (stime >= 0) {
+        tm = localtime(&stime);
+        strftime(bufptr, maxbuf, "%Y-%m-%d %H:%M:%S", tm);
+    }
+
+    /* tracks shorter than 30s will be silently discarded */
+
+    return;
 }
 
 
@@ -59,10 +81,13 @@ int main(int argc, char *argv[])
     int seconds = 0, total = 0;
     int n, bitrate;
     div_t length;
+    char *timestamp;
+    time_t ctime;
+    struct tm tm;
+    char timebuf[MAXTIMEBUF] = {0};
     TagLib_File *file;
     TagLib_Tag *tag;
     const TagLib_AudioProperties *prop;
-    time_t current;
 
     opterr = 0;
     while ((opt = getopt(argc, argv, "lctqT:")) != -1) {
@@ -83,7 +108,7 @@ int main(int argc, char *argv[])
                 break;
             case 'T':
                 enable_timestamp = 1;
-                /* TODO: optind? */
+                timestamp = optarg;
                 break;
             default:
                 break;  /* quietly ignore unknown options */
@@ -94,15 +119,13 @@ int main(int argc, char *argv[])
         usage(argv);
     }
 
+    if (enable_timestamp == 1) {
+        strptime(timestamp, "%Y-%m-%d %H:%M:%S", &tm);
+        ctime = mktime(&tm);
+    }
+
     /* try to avoid mojibake: enable UTF-8 output */
     taglib_set_strings_unicode(1);
-
-    /*
-     * set begin time here:
-     */
-    if (enable_timestamp == 1) {
-        current = parse_initial_timestamp();
-    }
 
     for (n=optind; n < argc; n++) {
         file = taglib_file_new(argv[n]);
@@ -135,12 +158,17 @@ int main(int argc, char *argv[])
                     bitrate,
                     taglib_tag_title(tag) );
             } else if (csv_mode == 1) {
-                printf( "\"%s\", \"%s\", \"%s\", \"\", \"%d\"\n",
+                printf( "\"%s\", \"%s\", \"%s\", ",
                     taglib_tag_artist(tag),
                     taglib_tag_title(tag),
-                    taglib_tag_album(tag),
-                    seconds );
-                current += seconds;   /* FIXME */
+                    taglib_tag_album(tag) );
+
+                if (enable_timestamp == 1) {
+                    get_scrobble_time(ctime, seconds, timebuf, MAXTIMEBUF);
+                    ctime += seconds;
+                }
+
+                printf( "\"%s\", \"\", \"%d\"\n", timebuf, seconds);
             } else {
                 printf( "FILE\t%s\n", argv[n] );
                 if (strlen(taglib_tag_title(tag)) > 0)      printf( "TITLE\t%s\n", taglib_tag_title(tag) );
