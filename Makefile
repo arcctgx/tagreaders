@@ -5,7 +5,7 @@ LTAGLIB = -ltag_c -lstdc++
 ITAGLIB = -I /usr/include/taglib/
 
 
-all: tagread_v1 tagread
+all: tagread_v1 tagread csvscrob
 
 
 tagread_v1: tagread_v1.c
@@ -14,6 +14,10 @@ tagread_v1: tagread_v1.c
 tagread: tagread.c
 	$(CC) $(CCOPTS) tagread.c $(LTAGLIB) $(ITAGLIB) -o tagread
 
+csvscrob: csvscrob.c
+	$(CC) $(CCOPTS) csvscrob.c $(LTAGLIB) $(ITAGLIB) -o csvscrob
+
 clean:
 	rm -f tagread_v1
 	rm -f tagread
+	rm -f csvscrob
