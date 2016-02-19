@@ -12,7 +12,7 @@
 int usage(char *argv[])
 {
     fprintf(stderr, "usage: %s [OPTIONS] <file> [file2 ...]\n", basename(argv[0]));
-    fprintf(stderr, "   -t <TIMESTAMP>: enable time stamps (format: YYYY-MM-DD hh:mm:ss)\n");
+    fprintf(stderr, "   -t <YYYY-MM-DD hh:mm:ss>: specify timestamp of beginning of first track\n");
     fprintf(stderr, "   -q: suppress error messages\n");
     return 1;
 }
