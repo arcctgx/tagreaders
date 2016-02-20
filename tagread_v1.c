@@ -9,7 +9,6 @@
 #define NOTAG (0)
 #define ID3V10 (10)
 #define ID3V11 (11)
-#define MAXGEN (191)    /* http://de.wikipedia.org/wiki/Liste_der_ID3v1-Genres */
 
 
 struct id3v1tag {
@@ -29,7 +28,7 @@ int has_id3v1_tag(FILE *mp3file);
 int get_id3v1_tag(FILE *mp3file, struct id3v1tag *tag);
 void del_trail_white(char *string);
 void sanitize_id3v1_strings(struct id3v1tag *tag);
-void print_id3v1_tag(struct id3v1tag tag);
+void print_id3v1_tag(struct id3v1tag *tag);
 
 
 int main(int argc, char *argv[])
@@ -55,7 +54,7 @@ int main(int argc, char *argv[])
         } else if (tag.version == ID3V10 || tag.version == ID3V11) {
             printf("FILE\t%s\n", argv[n]);
             sanitize_id3v1_strings(&tag);
-            print_id3v1_tag(tag);
+            print_id3v1_tag(&tag);
             printf("\n");
         }
 
@@ -158,8 +157,9 @@ void sanitize_id3v1_strings(struct id3v1tag *tag)
 }
 
 
-void print_id3v1_tag(struct id3v1tag tag)
+void print_id3v1_tag(struct id3v1tag *tag)
 {
+    /* http://de.wikipedia.org/wiki/Liste_der_ID3v1-Genres */
     char *genres[] = {"Blues", "Classic Rock", "Country", "Dance", "Disco", "Funk", "Grunge", "Hip-Hop", "Jazz",
         "Metal", "New Age", "Oldies", "Other", "Pop", "R&B", "Rap", "Reggae", "Rock", "Techno", "Industrial",
         "Alternative", "Ska", "Death Metal", "Pranks", "Soundtrack", "Euro-Techno", "Ambient", "Trip-Hop", "Vocal",
@@ -183,21 +183,22 @@ void print_id3v1_tag(struct id3v1tag tag)
         "Nu-Breakz", "Post-Punk", "Post-Rock", "Psytrance", "Shoegaze", "Space Rock", "Trop Rock", "World Music",
         "Neoclassical", "Audiobook", "Audio Theatre", "Neue Deutsche Welle", "Podcast", "Indie Rock", "G-Funk",
         "Dubstep", "Garage Rock", "Psybient"};
+    int n_genres = sizeof(genres)/sizeof(genres[0]);
 
-    if (strlen(tag.title) > 0)
-        printf("TITLE\t%s\n", tag.title);
-    if (strlen(tag.artist) > 0)
-        printf("ARTIST\t%s\n", tag.artist);
-    if (strlen(tag.album) > 0)
-        printf("ALBUM\t%s\n", tag.album);
-    if (strlen(tag.year) > 0)
-        printf("YEAR\t%s\n", tag.year);
-    if (tag.track > 0)
-        printf("TRACK\t%d\n", tag.track);
-    if (tag.genre >=0 && tag.genre < MAXGEN)
-        printf("GENRE\t%s\n", genres[tag.genre]);
-    if (strlen(tag.comment) > 0)
-        printf("COMMENT\t%s\n", tag.comment);
+    if (strlen(tag->title) > 0)
+        printf("TITLE\t%s\n", tag->title);
+    if (strlen(tag->artist) > 0)
+        printf("ARTIST\t%s\n", tag->artist);
+    if (strlen(tag->album) > 0)
+        printf("ALBUM\t%s\n", tag->album);
+    if (strlen(tag->year) > 0)
+        printf("YEAR\t%s\n", tag->year);
+    if (tag->track > 0)
+        printf("TRACK\t%d\n", tag->track);
+    if (tag->genre >= 0 && tag->genre < n_genres)
+        printf("GENRE\t%s\n", genres[tag->genre]);
+    if (strlen(tag->comment) > 0)
+        printf("COMMENT\t%s\n", tag->comment);
 
     return;
 }
