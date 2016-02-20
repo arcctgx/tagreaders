@@ -7,6 +7,8 @@
 #include <stdlib.h> /* for div() */
 #include <tag_c.h>
 
+#define YES 1
+#define NO 0
 
 int usage(char *argv[])
 {
@@ -44,7 +46,7 @@ int main(int argc, char *argv[])
 {
     char opt;
     extern int optind, opterr;
-    int list_mode = 0, show_total = 0, quiet_mode = 0;
+    int list_mode = NO, show_total = NO, verbose_mode = YES;
     int seconds = 0, total = 0;
     int n, bitrate;
     div_t length;
@@ -56,13 +58,13 @@ int main(int argc, char *argv[])
     while ((opt = getopt(argc, argv, "ltq")) != -1) {
         switch (opt) {
             case 'l':
-                list_mode = 1;
+                list_mode = YES;
                 break;
             case 't':
-                show_total = 1;
+                show_total = YES;
                 break;
             case 'q':
-                quiet_mode = 1;
+                verbose_mode = NO;
                 break;
             default:
                 break;  /* quietly ignore unknown options */
@@ -74,13 +76,13 @@ int main(int argc, char *argv[])
     }
 
     /* try to avoid mojibake: enable UTF-8 output */
-    taglib_set_strings_unicode(1);
+    taglib_set_strings_unicode(YES);
 
     for (n=optind; n < argc; n++) {
         file = taglib_file_new(argv[n]);
 
         if (file == NULL) {
-            if (quiet_mode == 0) {
+            if (verbose_mode == YES) {
                 fprintf(stderr, "cannot open \"%s\", skipping.\n", argv[n]);
             }
             continue;
@@ -96,7 +98,7 @@ int main(int argc, char *argv[])
             length = div(seconds, 60);
             total += seconds;
 
-            if (list_mode == 1) {
+            if (list_mode == YES) {
                 printf( "%s\t%s\t%4d\t%2d\t%2d:%02d\t%3d kbps\t%s\n", 
                     taglib_tag_artist(tag),
                     taglib_tag_album(tag),
@@ -119,7 +121,7 @@ int main(int argc, char *argv[])
                 printf( "BITRATE\t%d kbps\n\n", bitrate );
             }
         } else {
-            if (quiet_mode == 0) {
+            if (verbose_mode == YES) {
                 fprintf(stderr, "cannot read tag data of \"%s\", skipping.\n", argv[n]);
             }
             continue;
@@ -129,7 +131,7 @@ int main(int argc, char *argv[])
         taglib_file_free(file);
     }
 
-    if (show_total == 1) {
+    if (show_total == YES) {
         print_total_time(total);
     }
 

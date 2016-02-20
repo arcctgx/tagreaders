@@ -7,6 +7,8 @@
 #include <time.h>
 #include <tag_c.h>
 
+#define YES 1
+#define NO 0
 #define MAXTIMEBUF 64
 
 int usage(char *argv[])
@@ -47,7 +49,7 @@ int main(int argc, char *argv[])
 {
     char opt;
     extern int optind, opterr;
-    int quiet_mode = 0, enable_timestamp = 0;
+    int verbose_mode = YES, enable_timestamp = NO;
     int n, seconds = 0;
     time_t current_time;
     struct tm tm;
@@ -60,10 +62,10 @@ int main(int argc, char *argv[])
     while ((opt = getopt(argc, argv, "qt:")) != -1) {
         switch (opt) {
             case 'q':
-                quiet_mode = 1;
+                verbose_mode = NO;
                 break;
             case 't':
-                enable_timestamp = 1;
+                enable_timestamp = YES;
                 strptime(optarg, "%Y-%m-%d %H:%M:%S", &tm);
                 current_time = mktime(&tm);
                 break;
@@ -77,13 +79,13 @@ int main(int argc, char *argv[])
     }
 
     /* try to avoid mojibake: enable UTF-8 output */
-    taglib_set_strings_unicode(1);
+    taglib_set_strings_unicode(YES);
 
     for (n=optind; n < argc; n++) {
         file = taglib_file_new(argv[n]);
 
         if (file == NULL) {
-            if (quiet_mode == 0) {
+            if (verbose_mode == YES) {
                 fprintf(stderr, "cannot open \"%s\", skipping.\n", argv[n]);
             }
             continue;
@@ -97,7 +99,7 @@ int main(int argc, char *argv[])
 
             /* tracks shorter than 30s should be discarded */
             if (seconds < 30) {
-                if (quiet_mode == 0) {
+                if (verbose_mode == YES) {
                     fprintf(stderr, "track too short (%ds), skipping.\n", seconds);
                 }
                 continue;
@@ -108,14 +110,14 @@ int main(int argc, char *argv[])
                 taglib_tag_title(tag),
                 taglib_tag_album(tag) );
 
-            if (enable_timestamp == 1) {
+            if (enable_timestamp == YES) {
                 get_scrobble_time(current_time, seconds, timebuf, MAXTIMEBUF);
                 current_time += seconds;
             }
 
             printf( "\"%s\", \"\", \"%d\"\n", timebuf, seconds);
         } else {
-            if (quiet_mode == 0) {
+            if (verbose_mode == YES) {
                 fprintf(stderr, "cannot read tag data of \"%s\", skipping.\n", argv[n]);
             }
             continue;
