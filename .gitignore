@@ -1,3 +1,5 @@
+*.o
+
 tagread
 tagread_v1
 csvscrob
