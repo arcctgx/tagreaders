@@ -63,7 +63,7 @@ int get_id3v1_tag(FILE *mp3, struct id3v1tag *tag)
     if (tag->version == ID3V10 || tag->version == ID3V11) {
         /* load tag contents */
         fseek(mp3, -ID3SIZE, SEEK_END);
-        fgets(tagstr, ID3SIZE+1, mp3);
+        fread(tagstr, sizeof(char), ID3SIZE, mp3);
         fseek(mp3, pos, SEEK_SET);
 
         /* take care of common fields first */
@@ -74,7 +74,7 @@ int get_id3v1_tag(FILE *mp3, struct id3v1tag *tag)
         tag->genre = (unsigned char)tagstr[127];    /* genre is an 8-bit integer */
 
         /* id3v1.0: 30-char comment, track number unsupported */
-        if (tag->version == ID3V10) {  
+        if (tag->version == ID3V10) {
             tag->track = -1;
             strncpy(tag->comment, tagstr+97, 30); tag->comment[30] = '\0';
         }
