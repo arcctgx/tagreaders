@@ -104,7 +104,7 @@ int get_id3v1_tag(FILE *mp3, struct id3v1tag *tag)
         return NOTAG;
     else {
         fseek(mp3, -ID3SIZE, SEEK_END);
-        fgets(tagstr, ID3SIZE+1, mp3);
+        fread(tagstr, sizeof(char), ID3SIZE, mp3);
         fseek(mp3, pos, SEEK_SET);
 
         /* take care of common fields first */
