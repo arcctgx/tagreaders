@@ -31,14 +31,6 @@ static void del_trail_white(char *string);
 static void sanitize_id3v1_strings(struct id3v1tag *tag);
 
 
-int usage(char *argv[])
-{
-    printf("usage: %s <file> [file2 ...]\n", basename(argv[0]));
-    printf("read id3v1.x mp3 tag info.\n\n");
-    return 1;
-}
-
-
 int has_id3v1_tag(FILE *mp3)
 {
     int status = NOTAG;

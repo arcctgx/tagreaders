@@ -1,5 +1,6 @@
 #include "id3v1.h"
 
+static int usage(char *argv[]);
 
 int main(int argc, char *argv[])
 {
@@ -30,4 +31,12 @@ int main(int argc, char *argv[])
     }
 
     return 0;
+}
+
+
+static int usage(char *argv[])
+{
+    printf("usage: %s <file> [file2 ...]\n", basename(argv[0]));
+    printf("read id3v1.x mp3 tag info.\n\n");
+    return 1;
 }

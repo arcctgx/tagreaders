@@ -24,8 +24,6 @@ struct id3v1tag {
 };
 
 
-int usage(char *argv[]);
-
 int has_id3v1_tag(FILE *mp3file);
 
 int get_id3v1_tag(FILE *mp3file, struct id3v1tag *tag);
