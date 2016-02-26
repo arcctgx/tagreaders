@@ -14,9 +14,29 @@
 int usage(char *argv[])
 {
     fprintf(stderr, "usage: %s [OPTIONS] <file> [file2 ...]\n", basename(argv[0]));
-    fprintf(stderr, "   -t <YYYY-MM-DD hh:mm:ss>: specify timestamp of beginning of first track\n");
+    fprintf(stderr, "   -t <[YYYY-MM-DD ]hh:mm:ss>: specify timestamp of beginning of first track\n");
     fprintf(stderr, "   -q: suppress error messages\n");
     return 1;
+}
+
+
+static time_t init_current_time(char *str)
+{
+    time_t current_time;
+    struct tm tm;
+
+    /* try to parse full date first */
+    if (strptime(str, "%Y-%m-%d %H:%M:%S", &tm) == NULL) {
+        /* if it fails assume current day, only attempt to parse hour */
+        current_time = time(NULL);
+        tm = *localtime(&current_time);
+        if (strptime(str, "%H:%M:%S", &tm) == NULL) {
+            /* if it fails don't use timestamps at all */
+            return -1;
+        }
+    }
+
+    return mktime(&tm);
 }
 
 
@@ -52,7 +72,6 @@ int main(int argc, char *argv[])
     int verbose_mode = YES, enable_timestamp = NO;
     int n, seconds = 0;
     time_t current_time;
-    struct tm tm;
     char timebuf[MAXTIMEBUF] = {0};
     TagLib_File *file;
     TagLib_Tag *tag;
@@ -66,8 +85,7 @@ int main(int argc, char *argv[])
                 break;
             case 't':
                 enable_timestamp = YES;
-                strptime(optarg, "%Y-%m-%d %H:%M:%S", &tm);
-                current_time = mktime(&tm);
+                current_time = init_current_time(optarg);
                 break;
             default:
                 break;  /* quietly ignore unknown options */
@@ -110,7 +128,7 @@ int main(int argc, char *argv[])
                 taglib_tag_title(tag),
                 taglib_tag_album(tag) );
 
-            if (enable_timestamp == YES) {
+            if (enable_timestamp == YES && current_time != -1) {
                 get_scrobble_time(current_time, seconds, timebuf, MAXTIMEBUF);
                 current_time += seconds;
             }
