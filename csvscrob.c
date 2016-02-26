@@ -11,7 +11,8 @@
 #define NO 0
 #define MAXTIMEBUF 64
 
-int usage(char *argv[])
+
+static int usage(char *argv[])
 {
     fprintf(stderr, "usage: %s [OPTIONS] <file> [file2 ...]\n", basename(argv[0]));
     fprintf(stderr, "   -t <[YYYY-MM-DD ]hh:mm:ss>: specify timestamp of beginning of first track\n");
@@ -40,7 +41,7 @@ static time_t init_current_time(char *str)
 }
 
 
-void get_scrobble_time(time_t current_time, int track_time, char *bufptr, size_t maxbuf)
+static void get_scrobble_time(time_t current_time, int track_time, char *bufptr, size_t maxbuf)
 {
     time_t scrobble_time = -1;
     struct tm *tm;
