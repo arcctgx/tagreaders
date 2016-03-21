@@ -35,14 +35,14 @@ int has_id3v1_tag(FILE *mp3)
 {
     int status = NOTAG;
     long int pos;
-    char tag[ID3SIZE];
+    char tagstr[ID3SIZE] = {0};
 
     pos = ftell(mp3);
     fseek(mp3, -ID3SIZE, SEEK_END);
-    fgets(tag, ID3SIZE, mp3);
-    if (strncmp(tag, "TAG", 3) == 0) {  /* id3v1.0 or v1.1 tag exists */
+    fread(tagstr, sizeof(char), ID3SIZE, mp3);
+    if (strncmp(tagstr, "TAG", 3) == 0) {  /* id3v1.0 or v1.1 tag exists */
         status = ID3V10;
-        if (tag[ID3SIZE-3] == '\0')   /* NULL separator is present, indicating id3v1.1 */
+        if (tagstr[ID3SIZE-3] == '\0')   /* NULL separator is present, indicating id3v1.1 */
             status = ID3V11;
     }
 
@@ -54,7 +54,7 @@ int has_id3v1_tag(FILE *mp3)
 int get_id3v1_tag(FILE *mp3, struct id3v1tag *tag)
 {
     long int pos;
-    char tagstr[ID3SIZE+1];  /* +1 because fgets puts NULL at the end of buffer */
+    char tagstr[ID3SIZE] = {0};
 
     pos = ftell(mp3);
 
