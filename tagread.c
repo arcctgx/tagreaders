@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h> /* for getopt() */
 #include <libgen.h> /* for basename() */
@@ -10,13 +11,13 @@
 #define YES 1
 #define NO 0
 
-int usage(char *argv[])
+void usage(char *argv[])
 {
     fprintf(stderr, "usage: %s [OPTIONS] <file> [file2 ...]\n", basename(argv[0]));
     fprintf(stderr, "   -l: enable list output\n");
     fprintf(stderr, "   -t: show total time\n");
     fprintf(stderr, "   -q: suppress error messages\n");
-    return 1;
+    exit(EXIT_FAILURE);
 }
 
 

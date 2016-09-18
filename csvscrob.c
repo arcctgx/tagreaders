@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h> /* for getopt() */
 #include <libgen.h> /* for basename() */
@@ -12,12 +13,12 @@
 #define MAXTIMEBUF 64
 
 
-static int usage(char *argv[])
+static void usage(char *argv[])
 {
     fprintf(stderr, "usage: %s [OPTIONS] <file> [file2 ...]\n", basename(argv[0]));
     fprintf(stderr, "   -t <[YYYY-MM-DD ]hh:mm:ss>: specify timestamp of beginning of first track\n");
     fprintf(stderr, "   -q: suppress error messages\n");
-    return 1;
+    exit(EXIT_FAILURE);
 }
 
 
