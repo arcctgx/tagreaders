@@ -1,8 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <libgen.h>     /* basename() */
 #include "id3v1.h"
 
-static int usage(char *argv[]);
+static void usage(char *argv[]);
 
 int main(int argc, char *argv[])
 {
@@ -36,9 +37,9 @@ int main(int argc, char *argv[])
 }
 
 
-static int usage(char *argv[])
+static void usage(char *argv[])
 {
-    printf("usage: %s <file> [file2 ...]\n", basename(argv[0]));
-    printf("read id3v1.x mp3 tag info.\n\n");
-    return 1;
+    fprintf(stderr, "usage: %s <file> [file2 ...]\n", basename(argv[0]));
+    fprintf(stderr, "read id3v1.x mp3 tag info.\n");
+    exit(EXIT_FAILURE);
 }
