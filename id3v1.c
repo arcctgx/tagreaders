@@ -61,30 +61,31 @@ int get_id3v1_tag(FILE *mp3, struct id3v1tag *tag)
 
     pos = ftell(mp3);
 
+    memset(tag, 0, sizeof(struct id3v1tag));
     tag->version = has_id3v1_tag(mp3);
 
-    if (tag->version == ID3V10 || tag->version == ID3V11) {
+    if (tag->version != NOTAG) {
         /* load tag contents */
         fseek(mp3, -ID3SIZE, SEEK_END);
         fread(tagstr, sizeof(char), ID3SIZE, mp3);
         fseek(mp3, pos, SEEK_SET);
 
         /* take care of common fields first */
-        strncpy(tag->title, tagstr+3, 30); tag->title[30] = '\0';
-        strncpy(tag->artist, tagstr+33, 30); tag->artist[30] = '\0';
-        strncpy(tag->album, tagstr+63, 30); tag->album[30] = '\0';
-        strncpy(tag->year, tagstr+93, 4); tag->year[4] = '\0';
+        strncpy(tag->title, tagstr+3, 30);
+        strncpy(tag->artist, tagstr+33, 30);
+        strncpy(tag->album, tagstr+63, 30);
+        strncpy(tag->year, tagstr+93, 4);
         tag->genre = (unsigned char)tagstr[127];    /* genre is an 8-bit integer */
 
         /* id3v1.0: 30-char comment, track number unsupported */
         if (tag->version == ID3V10) {
+            strncpy(tag->comment, tagstr+97, 30);
             tag->track = -1;
-            strncpy(tag->comment, tagstr+97, 30); tag->comment[30] = '\0';
         }
         /* id3v1.1: 28-char comment, track number present */
         else if (tag->version == ID3V11) {
+            strncpy(tag->comment, tagstr+97, 28);
             tag->track = (unsigned char)tagstr[126];
-            strncpy(tag->comment, tagstr+97, 28); tag->comment[28] = '\0';
         }
 
         sanitize_id3v1_strings(tag);
