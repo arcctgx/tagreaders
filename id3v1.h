@@ -2,9 +2,6 @@
 #define _ID3V1_H_
 
 #include <stdio.h>
-#include <string.h>
-#include <libgen.h> /* basename() */
-#include <ctype.h>
 
 #define ID3SIZE (128)   /* id3v1.0/1.1 tag has a fixed size of 128 bytes */
 #define NOTAG (0)

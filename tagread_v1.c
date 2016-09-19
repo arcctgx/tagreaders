@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <libgen.h>     /* basename() */
 #include "id3v1.h"
 
 static int usage(char *argv[]);

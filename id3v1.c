@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 #include "id3v1.h"
 
 /* http://de.wikipedia.org/wiki/Liste_der_ID3v1-Genres */
