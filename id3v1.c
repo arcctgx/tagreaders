@@ -7,7 +7,7 @@
  * http://de.wikipedia.org/wiki/Liste_der_ID3v1-Genres
  */
 static char *genre_list[] = {
-    /* in ID3v1 specification */
+    /* in ID3v1 specification [0..79] */
     "Blues", "Classic Rock", "Country", "Dance", "Disco", "Funk", "Grunge", "Hip-Hop", "Jazz", "Metal",
     "New Age", "Oldies", "Other", "Pop", "R&B", "Rap", "Reggae", "Rock", "Techno", "Industrial", "Alternative",
     "Ska", "Death Metal", "Pranks", "Soundtrack", "Euro-Techno", "Ambient", "Trip-Hop", "Vocal",
@@ -17,7 +17,7 @@ static char *genre_list[] = {
     "Eurodance", "Dream", "Southern Rock", "Comedy", "Cult", "Gangsta", "Top 40", "Christian Rap", "Pop/Funk",
     "Jungle", "Native American", "Cabaret", "New Wave", "Psychadelic", "Rave", "Showtunes", "Trailer", "Lo-Fi",
     "Tribal", "Acid Punk", "Acid Jazz", "Polka", "Retro", "Musical", "Rock & Roll", "Hard Rock",
-    /* early Winamp extensions */
+    /* early Winamp extensions [80..141] */
     "Folk", "Folk-Rock", "National Folk", "Swing", "Fast Fusion", "Bebob", "Latin", "Revival", "Celtic", "Bluegrass",
     "Avantgarde", "Gothic Rock", "Progressive Rock", "Psychedelic Rock", "Symphonic Rock", "Slow Rock",
     "Big Band", "Chorus", "Easy Listening", "Acoustic", "Humour", "Speech", "Chanson", "Opera", "Chamber Music",
@@ -26,9 +26,9 @@ static char *genre_list[] = {
     "A capella", "Euro-House", "Dance Hall", "Goa", "Drum & Bass", "Club-House", "Hardcore Techno", "Terror",
     "Indie", "BritPop", "NegerPunk", "Polsk Punk", "Beat", "Christian Gangsta Rap", "Heavy Metal", "Black Metal",
     "Crossover", "Contemporary Christian", "Christian Rock",
-    /* since Winamp 1.91 */
+    /* since Winamp 1.91 [142..147] */
     "Merengue", "Salsa", "Thrash Metal", "Anime", "Jpop", "Syntpop",
-    /* since Winamp 5.6 */
+    /* since Winamp 5.6 [148..191] */
     "Abstract", "Art Rock", "Baroque", "Bhangra", "Big Beat", "Breakbeat", "Chillout", "Downtempo", "Dub",
     "EBM", "Electric", "Electro", "Electroclash", "Emo", "Experimental", "Garage", "Global", "IDM",
     "Illbient", "Industro-Goth", "Jam Band", "Krautrock", "Leftfield", "Lounge", "Math Rock", "New Romantic",
