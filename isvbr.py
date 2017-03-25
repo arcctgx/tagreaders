@@ -26,6 +26,7 @@ except AttributeError:
     sys.exit(13)
 
 if type(audio.info) == mutagen.mp3.MPEGInfo:
+    vbr = False
     if hasattr(audio.info, "bitrate_mode"):
         vbr = audio.info.bitrate_mode == mutagen.mp3.BitrateMode.VBR
     else:
