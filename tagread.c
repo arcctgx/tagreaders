@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
     extern int optind, opterr;
     int list_mode = NO, show_total = NO, verbose_mode = YES;
     int seconds = 0, total = 0;
+    int nfiles = 0;
     int n, bitrate;
     div_t length;
     TagLib_File *file;
@@ -89,11 +90,11 @@ int main(int argc, char *argv[])
             continue;
         }
 
+        ++nfiles;
         tag = taglib_file_tag(file);
         prop = taglib_file_audioproperties(file);
 
         if (tag != NULL && prop != NULL) {
-
             bitrate = taglib_audioproperties_bitrate(prop);
             seconds = taglib_audioproperties_length(prop);
             length = div(seconds, 60);
@@ -132,7 +133,7 @@ int main(int argc, char *argv[])
         taglib_file_free(file);
     }
 
-    if (show_total == YES) {
+    if (nfiles != 0 && show_total == YES) {
         print_total_time(total);
     }
 
