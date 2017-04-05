@@ -118,6 +118,7 @@ int main(int argc, char *argv[])
             if (verbose_mode == YES) {
                 fprintf(stderr, "cannot read tag data of \"%s\", skipping.\n", argv[n]);
             }
+            taglib_file_free(file);
             continue;
         } else {
             seconds = taglib_audioproperties_length(prop);
@@ -127,6 +128,7 @@ int main(int argc, char *argv[])
                 if (verbose_mode == YES) {
                     fprintf(stderr, "track too short (%ds), skipping.\n", seconds);
                 }
+                taglib_file_free(file);
                 continue;
             }
 
