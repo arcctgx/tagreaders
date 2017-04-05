@@ -114,7 +114,12 @@ int main(int argc, char *argv[])
         tag = taglib_file_tag(file);
         prop = taglib_file_audioproperties(file);
 
-        if (tag != NULL && prop != NULL) {
+        if (tag == NULL || prop == NULL) {
+            if (verbose_mode == YES) {
+                fprintf(stderr, "cannot read tag data of \"%s\", skipping.\n", argv[n]);
+            }
+            continue;
+        } else {
             seconds = taglib_audioproperties_length(prop);
 
             /* tracks shorter than 30s should be discarded */
@@ -136,11 +141,6 @@ int main(int argc, char *argv[])
             }
 
             printf( "\"%s\", \"\", \"%d\"\n", timebuf, seconds);
-        } else {
-            if (verbose_mode == YES) {
-                fprintf(stderr, "cannot read tag data of \"%s\", skipping.\n", argv[n]);
-            }
-            continue;
         }
 
         taglib_tag_free_strings();
