@@ -120,30 +120,30 @@ int main(int argc, char *argv[])
             }
             taglib_file_free(file);
             continue;
-        } else {
-            seconds = taglib_audioproperties_length(prop);
-
-            /* tracks shorter than 30s should be discarded */
-            if (seconds < 30) {
-                if (verbose_mode == YES) {
-                    fprintf(stderr, "track too short (%ds), skipping.\n", seconds);
-                }
-                taglib_file_free(file);
-                continue;
-            }
-
-            printf( "\"%s\", \"%s\", \"%s\", ",
-                taglib_tag_artist(tag),
-                taglib_tag_title(tag),
-                taglib_tag_album(tag) );
-
-            if (enable_timestamp == YES && current_time != -1) {
-                get_scrobble_time(current_time, seconds, timebuf, MAXTIMEBUF);
-                current_time += seconds;
-            }
-
-            printf( "\"%s\", \"\", \"%d\"\n", timebuf, seconds);
         }
+
+        seconds = taglib_audioproperties_length(prop);
+
+        /* tracks shorter than 30s should be discarded */
+        if (seconds < 30) {
+            if (verbose_mode == YES) {
+                fprintf(stderr, "track too short (%ds), skipping.\n", seconds);
+            }
+            taglib_file_free(file);
+            continue;
+        }
+
+        printf( "\"%s\", \"%s\", \"%s\", ",
+            taglib_tag_artist(tag),
+            taglib_tag_title(tag),
+            taglib_tag_album(tag) );
+
+        if (enable_timestamp == YES && current_time != -1) {
+            get_scrobble_time(current_time, seconds, timebuf, MAXTIMEBUF);
+            current_time += seconds;
+        }
+
+        printf( "\"%s\", \"\", \"%d\"\n", timebuf, seconds);
 
         taglib_tag_free_strings();
         taglib_file_free(file);
