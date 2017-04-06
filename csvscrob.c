@@ -71,8 +71,8 @@ int main(int argc, char *argv[])
 {
     char opt;
     extern int optind, opterr;
-    int verbose_mode = YES, enable_timestamp = NO;
-    int n, seconds = 0;
+    int verbose_mode = YES, timestamps_enabled = NO;
+    int n, track_seconds = 0;
     time_t current_time;
     char timebuf[MAXTIMEBUF] = {0};
     TagLib_File *file;
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
                 verbose_mode = NO;
                 break;
             case 't':
-                enable_timestamp = YES;
+                timestamps_enabled = YES;
                 current_time = init_current_time(optarg);
                 break;
             default:
@@ -122,12 +122,12 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        seconds = taglib_audioproperties_length(prop);
+        track_seconds = taglib_audioproperties_length(prop);
 
         /* tracks shorter than 30s should be discarded */
-        if (seconds < 30) {
+        if (track_seconds < 30) {
             if (verbose_mode == YES) {
-                fprintf(stderr, "track too short (%ds), skipping.\n", seconds);
+                fprintf(stderr, "track too short (%ds), skipping.\n", track_seconds);
             }
             taglib_file_free(file);
             continue;
@@ -138,12 +138,12 @@ int main(int argc, char *argv[])
             taglib_tag_title(tag),
             taglib_tag_album(tag) );
 
-        if (enable_timestamp == YES && current_time != -1) {
-            get_scrobble_time(current_time, seconds, timebuf, MAXTIMEBUF);
-            current_time += seconds;
+        if (timestamps_enabled == YES && current_time != -1) {
+            get_scrobble_time(current_time, track_seconds, timebuf, MAXTIMEBUF);
+            current_time += track_seconds;
         }
 
-        printf( "\"%s\", \"\", \"%d\"\n", timebuf, seconds);
+        printf( "\"%s\", \"\", \"%d\"\n", timebuf, track_seconds);
 
         taglib_tag_free_strings();
         taglib_file_free(file);
