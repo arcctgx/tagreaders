@@ -4,6 +4,7 @@ CCOPTS = -Wall -Werror -ansi -pedantic
 LTAGLIB = -ltag_c -lstdc++
 ITAGLIB = -I/usr/include/taglib/
 
+.PHONY: all clean
 
 all: tagread-v1 tagread csvscrob
 
