@@ -27,18 +27,20 @@ static time_t init_current_time(char *str)
     time_t current_time;
     struct tm tm;
 
+    memset(&tm, 0, sizeof(struct tm));
+
     /* try to parse full date first */
     if (strptime(str, "%Y-%m-%d %H:%M:%S", &tm) == NULL) {
         /* if it fails assume current day, only attempt to parse hour */
         current_time = time(NULL);
-        tm = *localtime(&current_time);
+        tm = *gmtime(&current_time);
         if (strptime(str, "%H:%M:%S", &tm) == NULL) {
             /* if it fails don't use timestamps at all */
             return -1;
         }
     }
 
-    return mktime(&tm);
+    return timegm(&tm); /* TODO: use portable alternative to timegm() */
 }
 
 
@@ -59,7 +61,7 @@ static void get_scrobble_time(time_t current_time, int track_time, char *bufptr,
     }
 
     if (scrobble_time >= 0) {
-        tm = localtime(&scrobble_time);
+        tm = gmtime(&scrobble_time);
         strftime(bufptr, maxbuf, "%Y-%m-%d %H:%M:%S", tm);
     }
 
