@@ -18,6 +18,7 @@ static void usage(char *argv[])
     fprintf(stderr, "usage: %s [OPTIONS] <file> [file2 ...]\n", basename(argv[0]));
     fprintf(stderr, "   -t <[YYYY-MM-DD ]hh:mm:ss>: specify timestamp of beginning of first track\n");
     fprintf(stderr, "   -q: suppress error messages\n");
+    fprintf(stderr, "   -U: disable UTF-8 output\n");
     exit(EXIT_FAILURE);
 }
 
@@ -82,7 +83,7 @@ int main(int argc, char *argv[])
     const TagLib_AudioProperties *prop;
 
     opterr = 0;
-    while ((opt = getopt(argc, argv, "qt:")) != -1) {
+    while ((opt = getopt(argc, argv, "qt:U")) != -1) {
         switch (opt) {
             case 'q':
                 verbose_mode = NO;
@@ -90,6 +91,9 @@ int main(int argc, char *argv[])
             case 't':
                 timestamps_enabled = YES;
                 current_time = init_current_time(optarg);
+                break;
+            case 'U':
+                taglib_set_strings_unicode(NO);
                 break;
             default:
                 break;  /* quietly ignore unknown options */
@@ -99,9 +103,6 @@ int main(int argc, char *argv[])
     if (optind == argc) {   /* no non-option arguments given */
         usage(argv);
     }
-
-    /* try to avoid mojibake: enable UTF-8 output */
-    taglib_set_strings_unicode(YES);
 
     for (n=optind; n < argc; n++) {
         file = taglib_file_new(argv[n]);
