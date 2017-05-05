@@ -33,14 +33,14 @@ static time_t init_current_time(char *str)
     if (strptime(str, "%Y-%m-%d %H:%M:%S", &tm) == NULL) {
         /* if it fails assume current day, only attempt to parse hour */
         current_time = time(NULL);
-        tm = *gmtime(&current_time);
+        tm = *localtime(&current_time);
         if (strptime(str, "%H:%M:%S", &tm) == NULL) {
             /* if it fails don't use timestamps at all */
             return -1;
         }
     }
 
-    return timegm(&tm); /* TODO: use portable alternative to timegm() */
+    return mktime(&tm);
 }
 
 
@@ -61,7 +61,7 @@ static void get_scrobble_time(time_t current_time, int track_time, char *bufptr,
     }
 
     if (scrobble_time >= 0) {
-        tm = gmtime(&scrobble_time);
+        tm = localtime(&scrobble_time);
         strftime(bufptr, maxbuf, "%Y-%m-%d %H:%M:%S", tm);
     }
 
