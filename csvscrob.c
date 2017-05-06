@@ -18,7 +18,7 @@
 static void usage(char *argv[])
 {
     fprintf(stderr, "usage: %s [OPTIONS] <file> [file2 ...]\n", basename(argv[0]));
-    fprintf(stderr, "   -t <[YYYY-MM-DD ]hh:mm:ss>: specify timestamp of beginning of first track\n");
+    fprintf(stderr, "   -t <[YYYY-MM-DD ]hh:mm:ss> | <now>: specify timestamp of beginning of first track\n");
     fprintf(stderr, "   -s: enable scrobbling of tracks shorter than %d seconds\n", SHORT_TRACK_LENGTH);
     fprintf(stderr, "   -q: suppress error messages\n");
     fprintf(stderr, "   -U: disable UTF-8 output\n");
@@ -31,20 +31,22 @@ static time_t init_current_time(char *str)
     time_t current_time;
     struct tm tm;
 
-    memset(&tm, 0, sizeof(struct tm));
-
-    /* try to parse full date first */
-    if (strptime(str, "%Y-%m-%d %H:%M:%S", &tm) == NULL) {
-        /* if it fails assume current day, only attempt to parse hour */
-        current_time = time(NULL);
-        tm = *localtime(&current_time);
-        if (strptime(str, "%H:%M:%S", &tm) == NULL) {
-            /* if it fails don't use timestamps at all */
-            return -1;
+    if (strncmp(str, "now", 3) == 0) {
+        return time(NULL);
+    } else {
+        memset(&tm, 0, sizeof(struct tm));
+        /* try to parse full date first */
+        if (strptime(str, "%Y-%m-%d %H:%M:%S", &tm) == NULL) {
+            /* if it fails assume current day, only attempt to parse hour */
+            current_time = time(NULL);
+            tm = *localtime(&current_time);
+            if (strptime(str, "%H:%M:%S", &tm) == NULL) {
+                /* if it fails don't use timestamps at all */
+                return -1;
+            }
         }
+        return mktime(&tm);
     }
-
-    return mktime(&tm);
 }
 
 
