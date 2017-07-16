@@ -132,6 +132,7 @@ int main(int argc, char *argv[])
             if (verbose_mode == YES) {
                 fprintf(stderr, "track too short (%ds), skipping.\n", track_seconds);
             }
+            current_time += track_seconds;
             taglib_file_free(file);
             continue;
         }
