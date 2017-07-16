@@ -11,12 +11,15 @@
 #define YES 1
 #define NO 0
 #define MAXTIMEBUF 64
+#define SHORT_TRACK_LENGTH (30)     /* seconds */
+#define LONG_TRACK_LENGTH (480)     /* seconds */
 
 
 static void usage(char *argv[])
 {
     fprintf(stderr, "usage: %s [OPTIONS] <file> [file2 ...]\n", basename(argv[0]));
     fprintf(stderr, "   -t <[YYYY-MM-DD ]hh:mm:ss>: specify timestamp of beginning of first track\n");
+    fprintf(stderr, "   -s: enable scrobbling of tracks shorter than %d seconds\n", SHORT_TRACK_LENGTH);
     fprintf(stderr, "   -q: suppress error messages\n");
     fprintf(stderr, "   -U: disable UTF-8 output\n");
     exit(EXIT_FAILURE);
@@ -52,13 +55,13 @@ static void get_scrobble_time(time_t current_time, int track_time, char *bufptr,
 
     memset(bufptr, 0, maxbuf);
 
-    /* if track length is between 30 sec and 8 min, scrobble at half of track */
-    if (track_time >= 30 && track_time < 480) {
+    /* if track length is less than 8 min, scrobble at half of track */
+    if (track_time < LONG_TRACK_LENGTH) {
         scrobble_time = current_time + track_time/2;
     }
     /* if track is longer than 8 min scrobble at 4 min */
-    else if (track_time >= 480) {
-        scrobble_time = current_time + 240;
+    else if (track_time >= LONG_TRACK_LENGTH) {
+        scrobble_time = current_time + LONG_TRACK_LENGTH/2;
     }
 
     if (scrobble_time >= 0) {
@@ -74,7 +77,7 @@ int main(int argc, char *argv[])
 {
     char opt;
     extern int optind, opterr;
-    int verbose_mode = YES, timestamps_enabled = NO;
+    int verbose_mode = YES, timestamps_enabled = NO, short_tracks_enabled = NO;
     int n, track_seconds = 0;
     time_t current_time;
     char timebuf[MAXTIMEBUF] = {0};
@@ -83,20 +86,24 @@ int main(int argc, char *argv[])
     const TagLib_AudioProperties *prop;
 
     opterr = 0;
-    while ((opt = getopt(argc, argv, "qt:U")) != -1) {
+    while ((opt = getopt(argc, argv, "t:sqU")) != -1) {
         switch (opt) {
-            case 'q':
-                verbose_mode = NO;
-                break;
             case 't':
                 timestamps_enabled = YES;
                 current_time = init_current_time(optarg);
+                break;
+            case 's':
+                short_tracks_enabled = YES;
+                break;
+            case 'q':
+                verbose_mode = NO;
                 break;
             case 'U':
                 taglib_set_strings_unicode(NO);
                 break;
             default:
-                break;  /* quietly ignore unknown options */
+                fprintf(stderr, "option -%c is not supported!\n", optopt);
+                break;
         }
     }
 
@@ -127,14 +134,16 @@ int main(int argc, char *argv[])
 
         track_seconds = taglib_audioproperties_length(prop);
 
-        /* tracks shorter than 30s should be discarded */
-        if (track_seconds < 30) {
-            if (verbose_mode == YES) {
-                fprintf(stderr, "track too short (%ds), skipping.\n", track_seconds);
+        /* discard track shorter than 30 seconds by default */
+        if (short_tracks_enabled == NO) {
+            if (track_seconds < SHORT_TRACK_LENGTH) {
+                if (verbose_mode == YES) {
+                    fprintf(stderr, "track too short (%ds), skipping.\n", track_seconds);
+                }
+                current_time += track_seconds;
+                taglib_file_free(file);
+                continue;
             }
-            current_time += track_seconds;
-            taglib_file_free(file);
-            continue;
         }
 
         printf( "\"%s\", \"%s\", \"%s\", ",
