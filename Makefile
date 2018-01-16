@@ -13,15 +13,15 @@ id3v1.o: id3v1.c id3v1.h
 	$(CC) $(CCOPTS) -c id3v1.c
 
 tagread-v1: tagread-v1.c id3v1.h id3v1.o
-	$(CC) $(CCOPTS) tagread-v1.c id3v1.o -o tagread-v1
+	$(CC) $(CCOPTS) $< id3v1.o -o $@
 
 tagread: tagread.c
-	$(CC) $(CCOPTS) tagread.c $(LTAGLIB) $(ITAGLIB) -o tagread
+	$(CC) $(CCOPTS) $< $(LTAGLIB) $(ITAGLIB) -o $@
 
 csvscrob: csvscrob.c
-	$(CC) $(CCOPTS) csvscrob.c $(LTAGLIB) $(ITAGLIB) -o csvscrob
+	$(CC) $(CCOPTS) $< $(LTAGLIB) $(ITAGLIB) -o $@
 
 
 clean:
-	rm -f *.o
-	rm -f tagread tagread-v1 csvscrob
+	$(RM) *.o
+	$(RM) tagread tagread-v1 csvscrob
