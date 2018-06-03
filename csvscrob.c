@@ -45,6 +45,7 @@ static time_t init_current_time(char *str)
                 return -1;
             }
         }
+        tm.tm_isdst = -1;   /* automatically determine if DST is in effect */
         return mktime(&tm);
     }
 }
