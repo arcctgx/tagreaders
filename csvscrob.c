@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h> /* for getopt() */
-#include <libgen.h> /* for basename() */
+#include <unistd.h> /* getopt() */
+#include <libgen.h> /* basename() */
 #include <time.h>
 #include <tag_c.h>
 
@@ -25,21 +25,21 @@ static void usage(char *argv[])
 }
 
 
-static time_t init_current_time(char *str)
+static time_t init_current_time(char *timestr)
 {
     time_t current_time;
     struct tm tm;
 
-    if (strncmp(str, "now", 3) == 0) {
+    if (strcmp(timestr, "now") == 0) {
         return time(NULL);
     } else {
         memset(&tm, 0, sizeof(struct tm));
         /* try to parse full date first */
-        if (strptime(str, "%Y-%m-%d %H:%M:%S", &tm) == NULL) {
+        if (strptime(timestr, "%Y-%m-%d %H:%M:%S", &tm) == NULL) {
             /* if it fails assume current day, only attempt to parse hour */
             current_time = time(NULL);
             tm = *localtime(&current_time);
-            if (strptime(str, "%H:%M:%S", &tm) == NULL) {
+            if (strptime(timestr, "%H:%M:%S", &tm) == NULL) {
                 /* if it fails don't use timestamps at all */
                 return -1;
             }
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
         usage(argv);
     }
 
-    for (n=optind; n < argc; n++) {
+    for (n=optind; n < argc; ++n) {
         file = taglib_file_new(argv[n]);
 
         if (file == NULL) {
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
         if (short_tracks_enabled == NO) {
             if (track_seconds < SHORT_TRACK_LENGTH) {
                 if (verbose_mode == YES) {
-                    fprintf(stderr, "track too short (%ds), skipping.\n", track_seconds);
+                    fprintf(stderr, "track too short (%d s), skipping.\n", track_seconds);
                 }
                 current_time += track_seconds;
                 taglib_file_free(file);
