@@ -8,11 +8,10 @@
 #include <time.h>
 #include <tag_c.h>
 
-#define YES 1
-#define NO 0
-#define MAXTIMEBUF 64
+#define YES (1)
+#define NO  (0)
+#define MAXTIMEBUF (64)
 #define SHORT_TRACK_LENGTH (30)     /* seconds */
-#define LONG_TRACK_LENGTH (480)     /* seconds */
 
 
 static void usage(char *argv[])
@@ -48,31 +47,6 @@ static time_t init_current_time(char *str)
         tm.tm_isdst = -1;   /* automatically determine if DST is in effect */
         return mktime(&tm);
     }
-}
-
-
-static void get_scrobble_time(time_t current_time, int track_time, char *bufptr, size_t maxbuf)
-{
-    time_t scrobble_time = -1;
-    struct tm *tm;
-
-    memset(bufptr, 0, maxbuf);
-
-    /* if track length is less than 8 min, scrobble at half of track */
-    if (track_time < LONG_TRACK_LENGTH) {
-        scrobble_time = current_time + track_time/2;
-    }
-    /* if track is longer than 8 min scrobble at 4 min */
-    else if (track_time >= LONG_TRACK_LENGTH) {
-        scrobble_time = current_time + LONG_TRACK_LENGTH/2;
-    }
-
-    if (scrobble_time >= 0) {
-        tm = localtime(&scrobble_time);
-        strftime(bufptr, maxbuf, "%Y-%m-%d %H:%M:%S", tm);
-    }
-
-    return;
 }
 
 
@@ -155,7 +129,7 @@ int main(int argc, char *argv[])
             taglib_tag_album(tag) );
 
         if (timestamps_enabled == YES && current_time != -1) {
-            get_scrobble_time(current_time, track_seconds, timebuf, MAXTIMEBUF);
+            strftime(timebuf, MAXTIMEBUF, "%Y-%m-%d %H:%M:%S", localtime(&current_time));
             current_time += track_seconds;
         }
 
