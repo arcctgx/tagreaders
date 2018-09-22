@@ -1,3 +1,7 @@
+#ifdef __CYGWIN__
+#define _GNU_SOURCE     /* strdup() */
+#endif
+
 #include <string.h>
 #include <string>
 #include <tag.h>

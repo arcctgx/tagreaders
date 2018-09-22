@@ -54,7 +54,9 @@ static time_t init_current_time(char *timestr)
 int main(int argc, char *argv[])
 {
     char opt;
+#ifndef __CYGWIN__
     extern int optind, opterr;
+#endif
     int verbose_mode = YES, timestamps_enabled = NO, short_tracks_enabled = NO;
     int n, track_seconds = 0;
     time_t current_time;

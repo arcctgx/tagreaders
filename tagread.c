@@ -47,7 +47,9 @@ void print_total_time(int seconds)
 int main(int argc, char *argv[])
 {
     char opt;
+#ifndef __CYGWIN__
     extern int optind, opterr;
+#endif
     int list_mode = NO, show_total = NO, verbose_mode = YES;
     int seconds = 0, total = 0;
     int nfiles = 0;
