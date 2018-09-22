@@ -15,10 +15,10 @@ tagread-v1: tagread-v1.c id3v1.h id3v1.o
 	$(CC) $(CCOPTS) $< id3v1.o -o $@
 
 tagread: tagread.c
-	$(CC) $(CCOPTS) $(LTAGLIB) $(ITAGLIB) $< -o $@
+	$(CC) $(CCOPTS) $< $(LTAGLIB) $(ITAGLIB) -o $@
 
 csvscrob: csvscrob.c
-	$(CC) $(CCOPTS) $(LTAGLIB) $(ITAGLIB) $< -o $@
+	$(CC) $(CCOPTS) $< $(LTAGLIB) $(ITAGLIB) -o $@
 
 clean:
 	$(RM) *.o tagread tagread-v1 csvscrob
