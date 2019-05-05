@@ -17,7 +17,6 @@ void usage(char *argv[])
     fprintf(stderr, "   -l: enable list output\n");
     fprintf(stderr, "   -t: show total time\n");
     fprintf(stderr, "   -q: suppress error messages\n");
-    fprintf(stderr, "   -U: disable UTF-8 output\n");
     exit(EXIT_FAILURE);
 }
 
@@ -58,7 +57,7 @@ int main(int argc, char *argv[])
     const TagLib_AudioProperties *prop;
 
     opterr = 0;
-    while ((opt = getopt(argc, argv, "ltqU")) != -1) {
+    while ((opt = getopt(argc, argv, "ltq")) != -1) {
         switch (opt) {
             case 'l':
                 list_mode = YES;
@@ -68,9 +67,6 @@ int main(int argc, char *argv[])
                 break;
             case 'q':
                 verbose_mode = NO;
-                break;
-            case 'U':
-                taglib_set_strings_unicode(NO);
                 break;
             default:
                 break;  /* quietly ignore unknown options */
@@ -102,10 +98,10 @@ int main(int argc, char *argv[])
             total += seconds;
 
             if (list_mode == YES) {
-                printf( "%s\t%s\t%4d\t%2d\t%2d:%02d\t%3d kbps\t%s\n", 
+                printf( "%s\t%s\t%4d\t%2d\t%2d:%02d\t%3d kbps\t%s\n",
                     taglib_tag_artist(tag),
                     taglib_tag_album(tag),
-                    taglib_tag_year(tag), 
+                    taglib_tag_year(tag),
                     taglib_tag_track(tag),
                     length.quot,    /* minutes */
                     length.rem,     /* seconds */
