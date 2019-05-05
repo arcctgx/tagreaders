@@ -20,6 +20,7 @@ static void usage(char *argv[])
     fprintf(stderr, "   -t <[YYYY-MM-DD ]hh:mm:ss> | <now>: specify timestamp of beginning of first track\n");
     fprintf(stderr, "   -s: enable scrobbling of tracks shorter than %d seconds\n", SHORT_TRACK_LENGTH);
     fprintf(stderr, "   -q: suppress error messages\n");
+    fprintf(stderr, "   -u: use UTC time in output\n");
     exit(EXIT_FAILURE);
 }
 
@@ -60,9 +61,10 @@ int main(int argc, char *argv[])
     TagLib_File *file;
     TagLib_Tag *tag;
     const TagLib_AudioProperties *prop;
+    struct tm* (*timefunc)(const time_t*) = &localtime;
 
     opterr = 0;
-    while ((opt = getopt(argc, argv, "t:sq")) != -1) {
+    while ((opt = getopt(argc, argv, "t:squ")) != -1) {
         switch (opt) {
             case 't':
                 timestamps_enabled = YES;
@@ -73,6 +75,9 @@ int main(int argc, char *argv[])
                 break;
             case 'q':
                 verbose_mode = NO;
+                break;
+            case 'u':
+                timefunc = &gmtime;
                 break;
             default:
                 fprintf(stderr, "option -%c is not supported!\n", optopt);
@@ -125,7 +130,7 @@ int main(int argc, char *argv[])
             taglib_tag_album(tag) );
 
         if (timestamps_enabled == YES && current_time != -1) {
-            strftime(timebuf, MAXTIMEBUF, "%Y-%m-%d %H:%M:%S", localtime(&current_time));
+            strftime(timebuf, MAXTIMEBUF, "%Y-%m-%d %H:%M:%S", timefunc(&current_time));
             current_time += track_seconds;
         }
 
