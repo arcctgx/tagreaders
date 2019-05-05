@@ -20,7 +20,6 @@ static void usage(char *argv[])
     fprintf(stderr, "   -t <[YYYY-MM-DD ]hh:mm:ss> | <now>: specify timestamp of beginning of first track\n");
     fprintf(stderr, "   -s: enable scrobbling of tracks shorter than %d seconds\n", SHORT_TRACK_LENGTH);
     fprintf(stderr, "   -q: suppress error messages\n");
-    fprintf(stderr, "   -U: disable UTF-8 output\n");
     exit(EXIT_FAILURE);
 }
 
@@ -63,7 +62,7 @@ int main(int argc, char *argv[])
     const TagLib_AudioProperties *prop;
 
     opterr = 0;
-    while ((opt = getopt(argc, argv, "t:sqU")) != -1) {
+    while ((opt = getopt(argc, argv, "t:sq")) != -1) {
         switch (opt) {
             case 't':
                 timestamps_enabled = YES;
@@ -74,9 +73,6 @@ int main(int argc, char *argv[])
                 break;
             case 'q':
                 verbose_mode = NO;
-                break;
-            case 'U':
-                taglib_set_strings_unicode(NO);
                 break;
             default:
                 fprintf(stderr, "option -%c is not supported!\n", optopt);
