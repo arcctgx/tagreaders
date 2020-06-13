@@ -7,6 +7,7 @@
 #include <libgen.h> /* basename() */
 #include <time.h>
 #include <tag_c.h>
+#include "albumartist_c.h"
 
 #define YES (1)
 #define NO  (0)
@@ -62,6 +63,7 @@ int main(int argc, char *argv[])
     TagLib_Tag *tag;
     const TagLib_AudioProperties *prop;
     struct tm* (*timefunc)(const time_t*) = &localtime;
+    char *album_artist = NULL;
 
     opterr = 0;
     while ((opt = getopt(argc, argv, "t:squ")) != -1) {
@@ -101,6 +103,7 @@ int main(int argc, char *argv[])
 
         tag = taglib_file_tag(file);
         prop = taglib_file_audioproperties(file);
+        album_artist = get_album_artist(file);
 
         if (tag == NULL || prop == NULL) {
             if (verbose_mode == YES) {
@@ -134,8 +137,9 @@ int main(int argc, char *argv[])
             current_time += track_seconds;
         }
 
-        printf( "\"%s\", \"\", \"%d\"\n", timebuf, track_seconds);
+        printf( "\"%s\", \"%s\", \"%d\"\n", timebuf, album_artist, track_seconds);
 
+        free(album_artist);
         taglib_tag_free_strings();
         taglib_file_free(file);
     }

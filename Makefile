@@ -1,8 +1,8 @@
-CC := gcc
 CCOPTS := -Wall -Werror -ansi -pedantic
+CXXOPTS := -Wall -Werror -ansi
 
-LTAGLIB := -ltag_c -lstdc++
-ITAGLIB := -I/usr/include/taglib/
+LTAGLIB := -ltag -ltag_c -lstdc++
+ITAGLIB := -I. -I/usr/include/taglib/
 
 .PHONY: all clean
 
@@ -14,11 +14,14 @@ id3v1.o: id3v1.c id3v1.h
 id3v1read: id3v1read.c id3v1.h id3v1.o
 	$(CC) $(CCOPTS) $< id3v1.o -o $@
 
-tagread: tagread.c
-	$(CC) $(CCOPTS) $< $(LTAGLIB) $(ITAGLIB) -o $@
+albumartist_c.o: albumartist_c.cpp albumartist_c.h
+	$(CXX) $(CXXOPTS) -c $< $(ITAGLIB)
 
-csvscrob: csvscrob.c
-	$(CC) $(CCOPTS) $< $(LTAGLIB) $(ITAGLIB) -o $@
+tagread: tagread.c albumartist_c.h albumartist_c.o
+	$(CC) $(CCOPTS) $< albumartist_c.o $(LTAGLIB) $(ITAGLIB) -o $@
+
+csvscrob: csvscrob.c albumartist_c.h albumartist_c.o
+	$(CC) $(CCOPTS) $< albumartist_c.o $(LTAGLIB) $(ITAGLIB) -o $@
 
 clean:
 	$(RM) *.o id3v1read tagread csvscrob
