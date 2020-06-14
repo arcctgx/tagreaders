@@ -17,10 +17,15 @@ class bitratechecker(object):
         if len(file_list) < 1:
             raise ValueError
 
+        self.__get_media_info(file_list)
+        self.__guess_encoder(file_list)
+
+
+    def __get_media_info(self, file_list):
         try:
-            raw_json = subprocess.check_output(["mediainfo", "--output=JSON"] + sorted(file_list))
+            raw_json = subprocess.check_output(["mediainfo", "--output=JSON"] + file_list)
         except subprocess.CalledProcessError:
-            raise IOError
+            raise EnvironmentError
 
         media = json.loads(raw_json)
 
@@ -44,15 +49,18 @@ class bitratechecker(object):
             except AttributeError:
                 self.__library.append("unreadable")
 
-        for f in sorted(file_list):
+
+    def __guess_encoder(self, file_list):
+        for f in file_list:
             try:
                 enc = subprocess.check_output(["mp3guessenc", "-n", f]).splitlines()[0]
-            except subprocess.CalledProcessError, e:
+            except subprocess.CalledProcessError as e:
                 # mp3guessenc returns different statuses for different encoders - not just zero on success
                 # so we actually get meaningful output here in except block
                 enc = e.output.splitlines()[0]
 
             self.__encoder.append(enc)
+
 
     def print_formatted(self):
         s = []
@@ -61,6 +69,7 @@ class bitratechecker(object):
             s.append("%-50s\t%d\t%-12s\t%-20s\t%s" % (z[0], z[1], z[2], z[3], z[4]) )
 
         print '\n'.join(s)
+
 
     def is_uniform(self):
         """
@@ -83,14 +92,14 @@ if len(sys.argv) < 2:
 for path in sys.argv[1:]:
     print path
 
-    mp3_files = glob.glob(os.path.join(path, "*.mp3"))
+    mp3_files = sorted(glob.glob(os.path.join(path, "*.mp3")))
 
     try:
         x = bitratechecker(mp3_files)
         x.print_formatted()
     except ValueError:
         print "directory " + path + " does not contain MP3 files!"
-    except IOError:
-        print "failed to get metadata of files in " + path + " using mediainfo!"
+    except EnvironmentError:
+        print "failed to get metadata of files in " + path + " using mediainfo or mp3guessenc!"
 
     print
