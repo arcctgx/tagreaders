@@ -14,7 +14,14 @@ class bitratechecker(object):
         self.__library = []
         self.__encoder = []
 
-        raw_json = subprocess.check_output(["mediainfo", "--output=JSON"] + sorted(file_list))
+        if len(file_list) < 1:
+            raise ValueError
+
+        try:
+            raw_json = subprocess.check_output(["mediainfo", "--output=JSON"] + sorted(file_list))
+        except subprocess.CalledProcessError:
+            raise IOError
+
         media = json.loads(raw_json)
 
         for m in media:
@@ -31,9 +38,11 @@ class bitratechecker(object):
                 self.__mode.append("unknown")
 
             try:
-                self.__library.append(str(m["media"]["track"][0]["Encoded_Library"]))
+                self.__library.append(str(m["media"]["track"][0]["Encoded_Library"].encode("utf-8")))
             except KeyError:
                 self.__library.append("unknown")
+            except AttributeError:
+                self.__library.append("unreadable")
 
         for f in sorted(file_list):
             try:
@@ -65,6 +74,13 @@ for path in sys.argv[1:]:
     print path
 
     mp3_files = glob.glob(os.path.join(path, "*.mp3"))
-    x = bitratechecker(mp3_files)
-    x.print_formatted()
+
+    try:
+        x = bitratechecker(mp3_files)
+        x.print_formatted()
+    except ValueError:
+        print "directory " + path + " does not contain MP3 files!"
+    except IOError:
+        print "failed to get metadata of files in " + path + " using mediainfo!"
+
     print
