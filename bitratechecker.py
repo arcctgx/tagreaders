@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 
+from __future__ import print_function
 import sys
 import os
 import glob
@@ -66,9 +67,9 @@ class bitratechecker(object):
         s = []
 
         for z in zip(self.__name, self.__bitrate, self.__mode, self.__library, self.__encoder):
-            s.append("%-50s\t%d\t%-12s\t%-20s\t%s" % (z[0], z[1], z[2], z[3], z[4]) )
+            s.append("{:<50}\t{}\t{:<12}\t{:<20}\t{}".format(z[0], z[1], z[2], z[3], z[4]))
 
-        print '\n'.join(s)
+        print('\n'.join(s))
 
 
     def is_uniform(self):
@@ -82,7 +83,7 @@ class bitratechecker(object):
 
 
 def usage():
-    print "usage: " + os.path.basename(sys.argv[0]) + " <dir> [dir2] ..."
+    print("usage:", os.path.basename(sys.argv[0]), "<dir> [dir2] ...")
     sys.exit(1)
 
 
@@ -90,7 +91,7 @@ if len(sys.argv) < 2:
     usage()
 
 for path in sys.argv[1:]:
-    print path
+    print(path)
 
     mp3_files = sorted(glob.glob(os.path.join(path, "*.mp3")))
 
@@ -98,8 +99,8 @@ for path in sys.argv[1:]:
         x = bitratechecker(mp3_files)
         x.print_formatted()
     except ValueError:
-        print "directory " + path + " does not contain MP3 files!"
+        print("directory", path, "does not contain MP3 files!")
     except EnvironmentError:
-        print "failed to get metadata of files in " + path + " using mediainfo or mp3guessenc!"
+        print("failed to get metadata of files in", path, "using mediainfo!")
 
-    print
+    print()
