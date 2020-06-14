@@ -62,6 +62,16 @@ class bitratechecker(object):
 
         print '\n'.join(s)
 
+    def is_uniform(self):
+        """
+        are all encoders the same?
+        are all library strings the same?
+        are all files CBR && are all bitrates the same?
+        are all files VBR?
+        """
+        return True
+
+
 def usage():
     print "usage: " + os.path.basename(sys.argv[0]) + " <dir> [dir2] ..."
     sys.exit(1)
