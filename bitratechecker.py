@@ -44,7 +44,7 @@ class bitratechecker(object):
                 self.__mode.append("unknown")
 
             try:
-                self.__library.append(str(m["media"]["track"][0]["Encoded_Library"].encode("utf-8")))
+                self.__library.append(str(m["media"]["track"][0]["Encoded_Library"].encode("utf-8").strip()))
             except KeyError:
                 self.__library.append("unknown")
             except AttributeError:
@@ -63,6 +63,28 @@ class bitratechecker(object):
             self.__encoder.append(enc)
 
 
+    def __is_same_encoder(self):
+        return len(set(self.__encoder)) == 1
+
+
+    def __is_same_library(self):
+        return len(set(self.__library)) == 1
+
+
+    def __is_same_bitrate(self):
+        return len(set(self.__bitrate)) == 1
+
+
+    def __is_all_cbr(self):
+        s = set(self.__mode)
+        return len(s) == 1 and "CBR" in s
+
+
+    def __is_all_vbr(self):
+        s = set(self.__mode)
+        return len(s) == 1 and "VBR" in s
+
+
     def print_formatted(self):
         s = []
 
@@ -73,12 +95,23 @@ class bitratechecker(object):
 
 
     def is_uniform(self):
-        """
-        are all encoders the same?
-        are all library strings the same?
-        are all files CBR && are all bitrates the same?
-        are all files VBR?
-        """
+        if not self.__is_same_encoder():
+            print("different encoders")
+            return False
+
+        if not self.__is_same_library():
+            print("different libraries")
+            return False
+
+        if self.__is_all_cbr():
+            if not self.__is_same_bitrate():
+                print("all CBR but different bitrates")
+                return False
+        else:
+            if not self.__is_all_vbr():
+                print("mixed VBR and CBR")
+                return False
+
         return True
 
 
@@ -91,16 +124,15 @@ if len(sys.argv) < 2:
     usage()
 
 for path in sys.argv[1:]:
-    print(path)
-
     mp3_files = sorted(glob.glob(os.path.join(path, "*.mp3")))
 
     try:
         x = bitratechecker(mp3_files)
-        x.print_formatted()
+        if not x.is_uniform():
+            print(path)
+            x.print_formatted()
+            print()
     except ValueError:
         print("directory", path, "does not contain MP3 files!")
     except EnvironmentError:
         print("failed to get metadata of files in", path, "using mediainfo!")
-
-    print()
