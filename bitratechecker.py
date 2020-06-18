@@ -7,19 +7,20 @@ import glob
 import subprocess
 import json
 
-class bitratechecker(object):
-    def __init__(self, file_list):
+class Mp3DownloadAnalyzer(object):
+    def __init__(self, mp3_files):
+
+        if not len(mp3_files) > 0:
+            raise ValueError
+
         self.__name = []
         self.__bitrate = []
         self.__mode = []
         self.__library = []
         self.__encoder = []
 
-        if len(file_list) < 1:
-            raise ValueError
-
-        self.__get_media_info(file_list)
-        self.__guess_encoder(file_list)
+        self.__get_media_info(mp3_files)
+        self.__guess_encoder(mp3_files)
 
         self.__same_bitrate = len(set(self.__bitrate)) == 1
         self.__same_library = len(set(self.__library)) == 1
@@ -30,9 +31,9 @@ class bitratechecker(object):
         #print("DBG:", self.__same_bitrate, self.__same_library, self.__same_encoder, self.__all_cbr, self.__all_vbr)
 
 
-    def __get_media_info(self, file_list):
+    def __get_media_info(self, mp3_files):
         try:
-            raw_json = subprocess.check_output(["mediainfo", "--output=JSON"] + file_list)
+            raw_json = subprocess.check_output(["mediainfo", "--output=JSON"] + mp3_files)
         except subprocess.CalledProcessError:
             raise EnvironmentError
 
@@ -59,8 +60,8 @@ class bitratechecker(object):
                 self.__library.append("unreadable")
 
 
-    def __guess_encoder(self, file_list):
-        for f in file_list:
+    def __guess_encoder(self, mp3_files):
+        for f in mp3_files:
             try:
                 enc = subprocess.check_output(["mp3guessenc", "-n", f]).splitlines()[0]
             except subprocess.CalledProcessError as e:
@@ -112,10 +113,10 @@ for path in sys.argv[1:]:
     mp3_files = sorted(glob.glob(os.path.join(path, "*.mp3")))
 
     try:
-        x = bitratechecker(mp3_files)
-        if not x.is_uniform():
+        download = Mp3DownloadAnalyzer(mp3_files)
+        if not download.is_uniform():
             print(path)
-            x.print_formatted()
+            download.print_formatted()
             print()
     except ValueError:
         print("directory", path, "does not contain MP3 files!")
