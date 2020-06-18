@@ -21,6 +21,14 @@ class bitratechecker(object):
         self.__get_media_info(file_list)
         self.__guess_encoder(file_list)
 
+        self.__same_bitrate = len(set(self.__bitrate)) == 1
+        self.__same_library = len(set(self.__library)) == 1
+        self.__same_encoder = len(set(self.__encoder)) == 1
+        self.__all_cbr = self.__mode.count("CBR") == len(self.__mode)
+        self.__all_vbr = self.__mode.count("VBR") == len(self.__mode)
+
+        #print("DBG:", self.__same_bitrate, self.__same_library, self.__same_encoder, self.__all_cbr, self.__all_vbr)
+
 
     def __get_media_info(self, file_list):
         try:
@@ -63,28 +71,6 @@ class bitratechecker(object):
             self.__encoder.append(enc)
 
 
-    def __is_same_encoder(self):
-        return len(set(self.__encoder)) == 1
-
-
-    def __is_same_library(self):
-        return len(set(self.__library)) == 1
-
-
-    def __is_same_bitrate(self):
-        return len(set(self.__bitrate)) == 1
-
-
-    def __is_all_cbr(self):
-        s = set(self.__mode)
-        return len(s) == 1 and "CBR" in s
-
-
-    def __is_all_vbr(self):
-        s = set(self.__mode)
-        return len(s) == 1 and "VBR" in s
-
-
     def print_formatted(self):
         s = []
 
@@ -95,22 +81,21 @@ class bitratechecker(object):
 
 
     def is_uniform(self):
-        if not self.__is_same_encoder():
+        if not self.__same_encoder:
             print("different encoders")
             return False
 
-        if not self.__is_same_library():
+        if not self.__same_library:
             print("different libraries")
             return False
 
-        if self.__is_all_cbr():
-            if not self.__is_same_bitrate():
-                print("all CBR but different bitrates")
-                return False
-        else:
-            if not self.__is_all_vbr():
-                print("mixed VBR and CBR")
-                return False
+        if not self.__all_cbr and not self.__all_vbr:
+            print("mixed VBR and CBR")
+            return False
+
+        if self.__all_cbr and not self.__same_bitrate:
+            print("all CBR but different bitrates")
+            return False
 
         return True
 
