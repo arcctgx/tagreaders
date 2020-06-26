@@ -110,7 +110,7 @@ if len(sys.argv) < 2:
     usage()
 
 for path in sys.argv[1:]:
-    mp3_files = sorted(glob.glob(os.path.join(path, "*.mp3")))
+    mp3_files = sorted(glob.glob(os.path.join(path, "*.[mM][pP]3")))
 
     try:
         download = Mp3DownloadAnalyzer(mp3_files)
@@ -119,6 +119,6 @@ for path in sys.argv[1:]:
             download.print_formatted()
             print()
     except ValueError:
-        print("directory", path, "does not contain MP3 files!")
+        print("directory", path, "does not contain .mp3 files!")
     except EnvironmentError:
         print("failed to get metadata of files in", path, "using mediainfo!")
