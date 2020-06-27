@@ -6,6 +6,7 @@ import os
 import glob
 import subprocess
 import json
+import argparse
 
 class Mp3DownloadAnalyzer(object):
     def __init__(self, mp3_files):
@@ -96,15 +97,24 @@ class Mp3DownloadAnalyzer(object):
         return True
 
 
-def usage():
-    print("usage:", os.path.basename(sys.argv[0]), "<dir> [dir2] ...")
-    sys.exit(1)
+parser = argparse.ArgumentParser(
+        prog="bitratechecker",
+        description="""Check uniformity of a set of .mp3 files inside a directory.
+            Uniformity is verified based on bitrate mode (all VBR or all CBR), bitrate
+            values (all CBR files must have the same bitrate), encoder strings reported
+            by mediainfo (must be the same for each file), and encoder type reported
+            by mp3guessenc (must be the same as well). A summary is printed if the set
+            is not uniform.""")
+parser.add_argument(
+        "-v", "--verbose", action="store_true",
+        help="print the summary also for uniform sets")
+parser.add_argument(
+        "directory", default=[os.getcwd()], nargs="*",
+        help="""path to a directory with .mp3 files to verify
+            (default: current directory)""")
+args = parser.parse_args()
 
-
-if len(sys.argv) < 2:
-    usage()
-
-for path in sys.argv[1:]:
+for path in args.directory:
     mp3_files = sorted(glob.glob(os.path.join(path, "*.[mM][pP]3")))
 
     print("Checking", path, "-", end=' ')
@@ -116,6 +126,8 @@ for path in sys.argv[1:]:
             download.print_formatted()
         else:
             print("OK")
+            if args.verbose:
+                download.print_formatted()
     except ValueError:
         print("no .mp3 files found!")
     except EnvironmentError:
