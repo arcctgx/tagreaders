@@ -28,8 +28,6 @@ class Mp3DownloadAnalyzer(object):
         self.__all_cbr = self.__mode.count("CBR") == len(self.__mode)
         self.__all_vbr = self.__mode.count("VBR") == len(self.__mode)
 
-        #print("DBG:", self.__same_bitrate, self.__same_library, self.__same_encoder, self.__all_cbr, self.__all_vbr)
-
 
     def __get_media_info(self, mp3_files):
         try:
@@ -79,23 +77,20 @@ class Mp3DownloadAnalyzer(object):
             s.append("{:<50}\t{}\t{:<12}\t{:<20}\t{}".format(z[0], z[1], z[2], z[3], z[4]))
 
         print('\n'.join(s))
+        print()
 
 
     def is_uniform(self):
         if not self.__same_encoder:
-            print("different encoders")
             return False
 
         if not self.__same_library:
-            print("different libraries")
             return False
 
         if not self.__all_cbr and not self.__all_vbr:
-            print("mixed VBR and CBR")
             return False
 
         if self.__all_cbr and not self.__same_bitrate:
-            print("all CBR but different bitrates")
             return False
 
         return True
@@ -112,13 +107,16 @@ if len(sys.argv) < 2:
 for path in sys.argv[1:]:
     mp3_files = sorted(glob.glob(os.path.join(path, "*.[mM][pP]3")))
 
+    print("Checking", path, "-", end=' ')
+
     try:
         download = Mp3DownloadAnalyzer(mp3_files)
         if not download.is_uniform():
-            print(path)
+            print("NOK")
             download.print_formatted()
-            print()
+        else:
+            print("OK")
     except ValueError:
-        print("directory", path, "does not contain .mp3 files!")
+        print("no .mp3 files found!")
     except EnvironmentError:
-        print("failed to get metadata of files in", path, "using mediainfo!")
+        print("failed to get metadata using mediainfo!")
