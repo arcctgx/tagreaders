@@ -115,6 +115,9 @@ parser.add_argument(
 args = parser.parse_args()
 
 for path in args.directory:
+    if not os.path.isdir(path):
+        continue
+
     mp3_files = sorted(glob.glob(os.path.join(path, "*.[mM][pP]3")))
 
     print("Checking", path, "-", end=' ')
