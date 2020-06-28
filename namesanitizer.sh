@@ -2,37 +2,37 @@
 
 set -e
 
-function usage {
+usage() {
     echo " usage: $(basename $0) [-n|--dry-run] <directory>"
     exit
 }
 
-function sanitize {
+sanitize() {
     if [ "$2" != "dir" ]; then
-        echo "$1" | \
-            tr [[:upper:]] [[:lower:]] | \
-            tr [±æêé³ñó¶¿¼äöü\ ] [aceelnoszzaou_] | \
+        echo "${1,,}" | \
+            tr ' ' _ | \
+            iconv -t ascii//TRANSLIT |
             sed 's/&/and/g' | \
-            sed -r 's/(.)[-=]/\1_/g' | \
+            sed -E 's/(.)[-=]/\1_/g' | \
             tr -cd _a-z0-9 | \
             sed 's/__*/_/g'
     else
-        echo "$1" | \
-            tr [[:upper:]] [[:lower:]] | \
-            tr [±æêé³ñó¶¿¼äöü\ ] [aceelnoszzaou_] | \
+        echo "${1,,}" | \
+            tr ' ' _ | \
+            iconv -t ascii//TRANSLIT |
             sed 's/&/and/g' | \
-            sed -r 's/([:graph:])[-=]/\1_/g' | \
+            sed -E 's/([[:graph:]])[-=]/\1_/g' | \
             tr -cd _a-z0-9-
     fi
 }
 
-function fname {
+fname() {
     name=$(echo "$1" | rev | cut -d. -f2- | rev)
     exte=$(echo "$1" | rev | cut -d. -f1 | rev)
     echo "$(sanitize "${name}")"."$(sanitize "${exte}")"
 }
 
-function dname {
+dname() {
     echo "$(sanitize "$1" dir)"
 }
 
@@ -83,7 +83,7 @@ fi
         while read filename
         do
             newname=$(fname "${filename}")
-            if [ "${filename}" = "${newname}" ]; then 
+            if [ "${filename}" = "${newname}" ]; then
                 echo "\"${filename}\" is sane"
             else
                 if [ "${dry_run}" = "YES" ]; then
