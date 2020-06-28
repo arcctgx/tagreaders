@@ -1,4 +1,6 @@
-This is a set of simple programs for reading metadata of audio files.
+This is a set of utilities used for managing a library of `.mp3` files.
+Initially it consisted only of readers of audio metadata (hence the name),
+but with time it evolved to include more functionalities.
 
 * `id3v1read` reads `ID3v1` metadata from `.mp3` files. It has no dependencies
   on external libraries.
@@ -12,3 +14,6 @@ This is a set of simple programs for reading metadata of audio files.
 
 * `isvbr` checks if an `.mp3` file has variable or constant bitrate. It serves
   as an example of `Mutagen` library usage.
+
+* `spectrogram` creates spectrograms of audio files. It supports all audio formats
+  recognized by `sox`. Useful for spotting lossy transcodes.
