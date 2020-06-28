@@ -20,3 +20,6 @@ but with time it evolved to include more functionalities.
 
 * `namesanitizer` removes spaces and characters outside of ASCII set from file
   and directory names. Target character set is `[a-z0-9_-]`.
+
+* `bitratechecker` is a tool for checking uniformity of a set of `.mp3` files.
+  The name is a bit misleading: encoder information is also taken into account.
