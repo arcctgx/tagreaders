@@ -17,3 +17,6 @@ but with time it evolved to include more functionalities.
 
 * `spectrogram` creates spectrograms of audio files. It supports all audio formats
   recognized by `sox`. Useful for spotting lossy transcodes.
+
+* `namesanitizer` removes spaces and characters outside of ASCII set from file
+  and directory names. Target character set is `[a-z0-9_-]`.
