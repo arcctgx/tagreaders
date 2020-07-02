@@ -71,14 +71,14 @@ class Mp3DownloadAnalyzer(object):
             self.__encoder.append(enc)
 
 
-    def print_formatted(self):
+    def __str__(self):
         s = []
 
         for z in zip(self.__name, self.__bitrate, self.__mode, self.__library, self.__encoder):
             s.append("{:<50}\t{}\t{:<12}\t{:<20}\t{}".format(z[0], z[1], z[2], z[3], z[4]))
+        s.append("")
 
-        print('\n'.join(s))
-        print()
+        return "\n".join(s)
 
 
     def is_uniform(self):
@@ -126,11 +126,11 @@ for path in args.directory:
         download = Mp3DownloadAnalyzer(mp3_files)
         if not download.is_uniform():
             print("NOK")
-            download.print_formatted()
+            print(download)
         else:
             print("OK")
             if args.verbose:
-                download.print_formatted()
+                print(download)
     except ValueError:
         print("no .mp3 files found!")
     except EnvironmentError:
