@@ -105,9 +105,13 @@ parser = argparse.ArgumentParser(
             by mediainfo (must be the same for each file), and encoder type reported
             by mp3guessenc (must be the same as well). A summary is printed if the set
             is not uniform.""")
-parser.add_argument(
+group = parser.add_mutually_exclusive_group()
+group.add_argument(
+        "-q", "--quiet", action="store_true",
+        help="never print the summary")
+group.add_argument(
         "-v", "--verbose", action="store_true",
-        help="print the summary also for uniform sets")
+        help="always print the summary")
 parser.add_argument(
         "directory", default=[os.getcwd()], nargs="*",
         help="""path to a directory with .mp3 files to verify
@@ -126,7 +130,8 @@ for path in args.directory:
         download = Mp3DownloadAnalyzer(mp3_files)
         if not download.is_uniform():
             print("NOK")
-            print(download)
+            if not args.quiet:
+                print(download)
         else:
             print("OK")
             if args.verbose:
