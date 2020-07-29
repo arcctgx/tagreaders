@@ -10,8 +10,9 @@ import sys
 
 class Mp3DownloadAnalyzer(object):
     def __init__(self, mp3_files):
+        self.__mp3_files = mp3_files
 
-        if not len(mp3_files) > 0:
+        if not len(self.__mp3_files) > 0:
             raise ValueError
 
         self.__name = []
@@ -20,8 +21,8 @@ class Mp3DownloadAnalyzer(object):
         self.__library = []
         self.__encoder = []
 
-        self.__get_media_info(mp3_files)
-        self.__guess_encoder(mp3_files)
+        self.__get_media_info()
+        self.__guess_encoder()
 
         self.__same_bitrate = len(set(self.__bitrate)) == 1
         self.__same_library = len(set(self.__library)) == 1
@@ -30,9 +31,9 @@ class Mp3DownloadAnalyzer(object):
         self.__all_vbr = self.__mode.count("VBR") == len(self.__mode)
 
 
-    def __get_media_info(self, mp3_files):
+    def __get_media_info(self):
         try:
-            raw_json = subprocess.check_output(["mediainfo", "--output=JSON"] + mp3_files)
+            raw_json = subprocess.check_output(["mediainfo", "--output=JSON"] + self.__mp3_files)
         except subprocess.CalledProcessError:
             raise EnvironmentError
 
@@ -59,8 +60,8 @@ class Mp3DownloadAnalyzer(object):
                 self.__library.append("unreadable")
 
 
-    def __guess_encoder(self, mp3_files):
-        for f in mp3_files:
+    def __guess_encoder(self):
+        for f in self.__mp3_files:
             try:
                 enc = subprocess.check_output(["mp3guessenc", "-n", f]).splitlines()[0]
             except subprocess.CalledProcessError as e:
