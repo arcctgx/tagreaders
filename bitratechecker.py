@@ -98,46 +98,56 @@ class Mp3DownloadAnalyzer(object):
         return True
 
 
-parser = argparse.ArgumentParser(
-        prog="bitratechecker",
-        description="""Check uniformity of a set of .mp3 files inside a directory.
-            Uniformity is verified based on bitrate mode (all VBR or all CBR), bitrate
-            values (all CBR files must have the same bitrate), encoder strings reported
-            by mediainfo (must be the same for each file), and encoder type reported
-            by mp3guessenc (must be the same as well). A summary is printed if the set
-            is not uniform.""")
-group = parser.add_mutually_exclusive_group()
-group.add_argument(
-        "-q", "--quiet", action="store_true",
-        help="never print the summary")
-group.add_argument(
-        "-v", "--verbose", action="store_true",
-        help="always print the summary")
-parser.add_argument(
-        "directory", default=[os.getcwd()], nargs="*",
-        help="""path to a directory with .mp3 files to verify
-            (default: current directory)""")
-args = parser.parse_args()
+def parse_cmdline_args():
+    parser = argparse.ArgumentParser(
+            prog="bitratechecker",
+            description="""Check uniformity of a set of .mp3 files inside a directory.
+                Uniformity is verified based on bitrate mode (all VBR or all CBR), bitrate
+                values (all CBR files must have the same bitrate), encoder strings reported
+                by mediainfo (must be the same for each file), and encoder type reported
+                by mp3guessenc (must be the same as well). A summary is printed if the set
+                is not uniform.""")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
+            "-q", "--quiet", action="store_true",
+            help="never print the summary")
+    group.add_argument(
+            "-v", "--verbose", action="store_true",
+            help="always print the summary")
+    parser.add_argument(
+            "directory", default=[os.getcwd()], nargs="*",
+            help="""path to a directory with .mp3 files to verify
+                (default: current directory)""")
 
-for path in args.directory:
-    if not os.path.isdir(path):
-        continue
+    return parser.parse_args()
 
-    mp3_files = sorted(glob.glob(os.path.join(path, "*.[mM][pP]3")))
 
-    print("Checking", path, "-", end=' ')
+def main():
+    args = parse_cmdline_args()
 
-    try:
-        download = Mp3DownloadAnalyzer(mp3_files)
-        if not download.is_uniform():
-            print("NOK")
-            if not args.quiet:
-                print(download)
-        else:
-            print("OK")
-            if args.verbose:
-                print(download)
-    except ValueError:
-        print("no .mp3 files found!")
-    except EnvironmentError:
-        print("failed to get metadata using mediainfo!")
+    for path in args.directory:
+        if not os.path.isdir(path):
+            continue
+
+        mp3_files = sorted(glob.glob(os.path.join(path, "*.[mM][pP]3")))
+
+        print("Checking", path, "-", end=' ')
+
+        try:
+            download = Mp3DownloadAnalyzer(mp3_files)
+            if not download.is_uniform():
+                print("NOK")
+                if not args.quiet:
+                    print(download)
+            else:
+                print("OK")
+                if args.verbose:
+                    print(download)
+        except ValueError:
+            print("no .mp3 files found!")
+        except EnvironmentError:
+            print("failed to get metadata using mediainfo!")
+
+
+if __name__ == "__main__":
+    main()
