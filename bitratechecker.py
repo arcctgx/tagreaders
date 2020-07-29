@@ -1,12 +1,12 @@
 #!/usr/bin/env python2
 
 from __future__ import print_function
-import sys
-import os
-import glob
-import subprocess
-import json
 import argparse
+import glob
+import json
+import os
+import subprocess
+import sys
 
 class Mp3DownloadAnalyzer(object):
     def __init__(self, mp3_files):
