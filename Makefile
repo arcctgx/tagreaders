@@ -4,6 +4,11 @@ CXXOPTS := -Wall -Werror -ansi
 LTAGLIB := -ltag -ltag_c -lstdc++
 ITAGLIB := -I. -I/usr/include/taglib/
 
+ifeq ($(ASAN), yes)
+CCOPTS += -fsanitize=address
+CXXOPTS += -fsanitize=address
+endif
+
 .PHONY: all clean
 
 all: id3v1read tagread csvscrob
