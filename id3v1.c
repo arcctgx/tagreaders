@@ -131,16 +131,20 @@ static void del_trail_white(char *string)
 {
     int n;
 
-    for (n=strlen(string)-1; n >= 0; n--)
-        if (isspace(string[n]) == 0) {
+    if (string == NULL) {
+        return;
+    }
+
+    for (n=strlen(string)-1; n >= 0; n--) {
+        if (isspace((unsigned char)string[n]) == 0) {
             string[n+1] = '\0';
             break;
         }
+    }
 
-    if (n == -1)     /* we went through entire string, it's empty */
+    if (n == -1) {  /* we went through entire string, it's empty */
         string[0] = '\0';
-
-    return;
+    }
 }
 
 
