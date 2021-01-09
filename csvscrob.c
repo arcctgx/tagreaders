@@ -19,7 +19,7 @@ static void usage(char *argv[])
 {
     fprintf(stderr, "usage: %s [OPTIONS] <file> [file2 ...]\n", basename(argv[0]));
     fprintf(stderr, "   -t <[YYYY-MM-DD ]hh:mm:ss> | <now>: specify timestamp of beginning of first track\n");
-    fprintf(stderr, "   -s: enable scrobbling of tracks shorter than %d seconds\n", SHORT_TRACK_LENGTH);
+    fprintf(stderr, "   -s: allow scrobbling short tracks\n");
     fprintf(stderr, "   -q: suppress error messages\n");
     fprintf(stderr, "   -u: use UTC time in output\n");
     exit(EXIT_FAILURE);
@@ -117,9 +117,9 @@ int main(int argc, char *argv[])
 
         track_seconds = taglib_audioproperties_length(prop);
 
-        /* discard track shorter than 30 seconds by default */
+        /* by default only consider tracks longer than 30 seconds */
         if (short_tracks_enabled == NO) {
-            if (track_seconds < SHORT_TRACK_LENGTH) {
+            if (track_seconds <= SHORT_TRACK_LENGTH) {
                 if (verbose_mode == YES) {
                     fprintf(stderr, "track too short (%d s), skipping.\n", track_seconds);
                 }
