@@ -12,9 +12,6 @@ but with time it evolved to include more functionalities.
   [Universal Scrobbler](http://universalscrobbler.com) "bulk scrobble" mode.
   It used to be a part of `tagread`, but later became a separate application.
 
-* `isvbr` checks if an `.mp3` file has variable or constant bitrate. It serves
-  as an example of `Mutagen` library usage.
-
 * `spectrogram` creates spectrograms of audio files. It supports all audio formats
   recognized by `sox`. Useful for spotting lossy transcodes.
 
