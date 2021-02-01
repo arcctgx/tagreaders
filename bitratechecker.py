@@ -1,6 +1,5 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from __future__ import print_function
 import argparse
 import glob
 import json
@@ -8,7 +7,7 @@ import os
 import subprocess
 import sys
 
-class Mp3DownloadAnalyzer(object):
+class Mp3DownloadAnalyzer:
     def __init__(self, mp3_files):
         self.mp3_files = mp3_files
 
@@ -40,7 +39,7 @@ class Mp3DownloadAnalyzer(object):
         media = json.loads(raw_json)
 
         for m in media:
-            self.name.append(os.path.basename(str(m["media"]["@ref"])))
+            self.name.append(os.path.basename(m["media"]["@ref"]))
 
             try:
                 self.bitrate.append(int(m["media"]["track"][0]["OverallBitRate"]))
@@ -48,12 +47,12 @@ class Mp3DownloadAnalyzer(object):
                 self.bitrate.append(-1)
 
             try:
-                self.mode.append(str(m["media"]["track"][0]["OverallBitRate_Mode"]))
+                self.mode.append(m["media"]["track"][0]["OverallBitRate_Mode"])
             except KeyError:
                 self.mode.append("unknown")
 
             try:
-                self.library.append(str(m["media"]["track"][0]["Encoded_Library"].encode("utf-8").strip()))
+                self.library.append(m["media"]["track"][0]["Encoded_Library"].strip())
             except KeyError:
                 self.library.append("unknown")
             except AttributeError:
@@ -63,10 +62,10 @@ class Mp3DownloadAnalyzer(object):
     def guess_encoder(self):
         for f in self.mp3_files:
             try:
-                enc = subprocess.check_output(["mp3guessenc", "-n", f]).splitlines()[0]
+                subprocess.check_output(["mp3guessenc", "-n", f], text=True)
             except subprocess.CalledProcessError as e:
                 # mp3guessenc returns different statuses for different encoders - not just zero on success
-                # so we actually get meaningful output here in except block
+                # so we actually only get meaningful output here in except block
                 enc = e.output.splitlines()[0]
 
             self.encoder.append(enc)
@@ -76,7 +75,7 @@ class Mp3DownloadAnalyzer(object):
         s = []
 
         for z in zip(self.name, self.bitrate, self.mode, self.library, self.encoder):
-            s.append("{:<50}\t{}\t{:<12}\t{:<20}\t{}".format(z[0], z[1], z[2], z[3], z[4]))
+            s.append("{:<50}\t{}\t{:<12}\t{:<20}\t{}".format(*z))
         s.append("")
 
         return "\n".join(s)
