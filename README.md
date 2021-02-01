@@ -20,3 +20,6 @@ but with time it evolved to include more functionalities.
 
 * `bitratechecker` is a tool for checking uniformity of a set of `.mp3` files.
   The name is a bit misleading: encoder information is also taken into account.
+
+* `beetstats` generates statistics of `beets` library, and stores the results
+  in machine-readable format.
