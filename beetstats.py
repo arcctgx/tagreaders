@@ -19,12 +19,9 @@ regex = re.compile("\((.+)\ ")
 seconds = float(regex.findall(output[1])[0])
 size = int(regex.findall(output[2])[0])
 
-hours = seconds/3600
-size_MiB = float(size)/1024/1024
-
 current_time = datetime.now()
 unix_time = current_time.strftime("%s")
 
 statfile = open(stat_path, "a")
-print >> statfile, "%s %s %d %.2f %d %d %d %d %.2f %.2f" % (current_time.isoformat(), unix_time, tracks, seconds, size, artists, albums, album_artists, hours, size_MiB)
+print >> statfile, "%s %s %d %d %d %d %.2f %d" % (unix_time, current_time.isoformat(), artists, album_artists, albums, tracks, seconds, size)
 statfile.close()
