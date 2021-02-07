@@ -1,12 +1,12 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from datetime import datetime
-import subprocess
 import re
+import subprocess
+from datetime import datetime
 
 stat_path = "/home/arcctgx/Dropbox/data/beet_stats.txt"
 
-output = subprocess.check_output(["beet", "stats", "-e"]).splitlines()
+output = subprocess.check_output(["beet", "stats", "-e"], text=True).splitlines()
 
 tracks= int(output[0].split(":")[1])
 artists = int(output[3].split(":")[1])
@@ -22,6 +22,5 @@ size = int(regex.findall(output[2])[0])
 current_time = datetime.now()
 unix_time = current_time.strftime("%s")
 
-statfile = open(stat_path, "a")
-print >> statfile, "%s %s %d %d %d %d %.2f %d" % (unix_time, current_time.isoformat(), artists, album_artists, albums, tracks, seconds, size)
-statfile.close()
+with open(stat_path, "a") as f:
+    f.write("%s %s %d %d %d %d %.2f %d\n" % (unix_time, current_time.isoformat(), artists, album_artists, albums, tracks, seconds, size))
