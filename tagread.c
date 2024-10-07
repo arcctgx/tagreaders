@@ -95,42 +95,43 @@ int main(int argc, char *argv[])
         tag = taglib_file_tag(file);
         prop = taglib_file_audioproperties(file);
 
-        if (tag != NULL && prop != NULL) {
-            album_artist = get_album_artist(file);
-            bitrate = taglib_audioproperties_bitrate(prop);
-            seconds = taglib_audioproperties_length(prop);
-            length = div(seconds, 60);
-            total += seconds;
-
-            if (list_mode == YES) {
-                printf( "%s\t%s\t%s\t%4d\t%2d\t%2d:%02d\t%3d kbps\t%s\n",
-                    taglib_tag_artist(tag),
-                    taglib_tag_album(tag),
-                    album_artist[0] == '\0' ? "\b" : album_artist,  /* delete preceding tab if album artist not set */
-                    taglib_tag_year(tag),
-                    taglib_tag_track(tag),
-                    length.quot,    /* minutes */
-                    length.rem,     /* seconds */
-                    bitrate,
-                    taglib_tag_title(tag) );
-            } else {
-                printf( "FILE\t%s\n", argv[n] );
-                if (strlen(taglib_tag_title(tag)) > 0)      printf( "TITLE\t%s\n", taglib_tag_title(tag) );
-                if (strlen(taglib_tag_artist(tag)) > 0)     printf( "ARTIST\t%s\n", taglib_tag_artist(tag) );
-                if (strlen(taglib_tag_album(tag)) > 0)      printf( "ALBUM\t%s\n", taglib_tag_album(tag) );
-                if (strlen(album_artist) > 0)               printf( "ALBART\t%s\n", album_artist );
-                if (taglib_tag_year(tag) != 0)              printf( "YEAR\t%d\n", taglib_tag_year(tag) );
-                if (taglib_tag_track(tag) != 0)             printf( "TRACK\t%d\n", taglib_tag_track(tag) );
-                if (strlen(taglib_tag_genre(tag)) > 0)      printf( "GENRE\t%s\n", taglib_tag_genre(tag) );
-                if (strlen(taglib_tag_comment(tag)) > 0)    printf( "COMMENT\t%s\n", taglib_tag_comment(tag) );
-                printf( "LENGTH\t%d:%02d\n", length.quot, length.rem );
-                printf( "BITRATE\t%d kbps\n\n", bitrate );
-            }
-        } else {
+        if (tag == NULL || prop == NULL) {
             if (verbose_mode == YES) {
                 fprintf(stderr, "cannot read tag data of \"%s\", skipping.\n", argv[n]);
             }
+            taglib_file_free(file);
             continue;
+        }
+
+        album_artist = get_album_artist(file);
+        bitrate = taglib_audioproperties_bitrate(prop);
+        seconds = taglib_audioproperties_length(prop);
+        length = div(seconds, 60);
+        total += seconds;
+
+        if (list_mode == YES) {
+            printf( "%s\t%s\t%s\t%4d\t%2d\t%2d:%02d\t%3d kbps\t%s\n",
+                taglib_tag_artist(tag),
+                taglib_tag_album(tag),
+                album_artist[0] == '\0' ? "\b" : album_artist,  /* delete preceding tab if album artist not set */
+                taglib_tag_year(tag),
+                taglib_tag_track(tag),
+                length.quot,    /* minutes */
+                length.rem,     /* seconds */
+                bitrate,
+                taglib_tag_title(tag) );
+        } else {
+            printf( "FILE\t%s\n", argv[n] );
+            if (strlen(taglib_tag_title(tag)) > 0)      printf( "TITLE\t%s\n", taglib_tag_title(tag) );
+            if (strlen(taglib_tag_artist(tag)) > 0)     printf( "ARTIST\t%s\n", taglib_tag_artist(tag) );
+            if (strlen(taglib_tag_album(tag)) > 0)      printf( "ALBUM\t%s\n", taglib_tag_album(tag) );
+            if (strlen(album_artist) > 0)               printf( "ALBART\t%s\n", album_artist );
+            if (taglib_tag_year(tag) != 0)              printf( "YEAR\t%d\n", taglib_tag_year(tag) );
+            if (taglib_tag_track(tag) != 0)             printf( "TRACK\t%d\n", taglib_tag_track(tag) );
+            if (strlen(taglib_tag_genre(tag)) > 0)      printf( "GENRE\t%s\n", taglib_tag_genre(tag) );
+            if (strlen(taglib_tag_comment(tag)) > 0)    printf( "COMMENT\t%s\n", taglib_tag_comment(tag) );
+            printf( "LENGTH\t%d:%02d\n", length.quot, length.rem );
+            printf( "BITRATE\t%d kbps\n\n", bitrate );
         }
 
         free(album_artist);
