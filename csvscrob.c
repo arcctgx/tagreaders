@@ -105,7 +105,6 @@ int main(int argc, char *argv[])
 
         tag = taglib_file_tag(file);
         prop = taglib_file_audioproperties(file);
-        album_artist = get_album_artist(file);
 
         if (tag == NULL || prop == NULL) {
             if (verbose_mode == YES) {
@@ -115,6 +114,7 @@ int main(int argc, char *argv[])
             continue;
         }
 
+        album_artist = get_album_artist(file);
         track_seconds = taglib_audioproperties_length(prop);
 
         /* by default only consider tracks longer than 30 seconds */
