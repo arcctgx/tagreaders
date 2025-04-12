@@ -1,5 +1,5 @@
-CCOPTS := -Wall -Werror -ansi -pedantic
-CXXOPTS := -Wall -Werror -ansi
+CCOPTS := -Wall -Werror
+CXXOPTS := -Wall -Werror
 
 LTAGLIB := -ltag -ltag_c -lstdc++
 ITAGLIB := -I. -I/usr/include/taglib/
