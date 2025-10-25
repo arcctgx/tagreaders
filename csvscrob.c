@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     for (n=optind; n < argc; ++n) {
         file = taglib_file_new(argv[n]);
 
-        if (file == NULL) {
+        if (file == NULL || !taglib_file_is_valid(file)) {
             if (verbose_mode == YES) {
                 fprintf(stderr, "cannot open \"%s\", skipping.\n", argv[n]);
             }
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        album_artist = get_album_artist(file);
+        album_artist = get_album_artist(argv[n]);
         track_seconds = taglib_audioproperties_length(prop);
 
         /* by default only consider tracks longer than 30 seconds */

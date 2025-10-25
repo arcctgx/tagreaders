@@ -1,5 +1,3 @@
-#include <tag_c.h>
-
 #ifndef _ALBUMARTIST_C_H_
 #define _ALBUMARTIST_C_H_
 
@@ -9,10 +7,10 @@ extern "C" {
 
 /**
  * @brief Retrieve album artist field from audio file metadata.
- * @param[in] file  TagLib audio file pointer
+ * @param[in] path  Filesystem path of the audio file.
  * @returns Pointer to C string containing album artist. It must be freed by the caller.
  */
-char *get_album_artist(const TagLib_File *file);
+char *get_album_artist(const char *path);
 
 #ifdef __cplusplus
 }
